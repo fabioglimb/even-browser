@@ -1,8 +1,6 @@
-# EvenBrowse
+# EvenBrowser
 
 A hands-free web browser for **Even Realities G2 glasses**. Enter a URL on your phone, read web content on your glasses — follow links, navigate back, bookmark pages, all hands-free.
-
-![EvenBrowse Banner](docs/images/banner.png)
 
 ---
 
@@ -89,36 +87,25 @@ EvenBrowse is built for the G2 display. Every interaction is designed for scroll
 
 ---
 
-## Screenshots & Media
+## Screenshots
 
-> **To add:** place files in the `docs/` folder.
+### Phone UI
 
-### Required Screenshots
+| Home | Page View | Settings |
+|------|-----------|----------|
+| ![Home](docs/images/phone-home.png) | ![PageView](docs/images/phone-pageview.png) | ![Settings](docs/images/phone-settings.png) |
 
-| File | Description |
-|------|-------------|
-| `docs/images/banner.png` | Banner image (1280x640 or similar, dark theme with globe + app name) |
-| `docs/images/phone-home.png` | Phone UI — Home screen with URL bar, quick links, bookmarks |
-| `docs/images/phone-pageview.png` | Phone UI — Page view with content preview and links |
-| `docs/images/glass-waiting.png` | Glasses simulator — Waiting/home screen with globe logo |
-| `docs/images/glass-reading.png` | Glasses simulator — Read mode scrolling through page content |
-| `docs/images/glass-links.png` | Glasses simulator — Links mode with numbered link list |
-| `docs/images/glass-loading.png` | Glasses simulator — Loading screen with domain |
-| `docs/images/glass-buttons.png` | Glasses simulator — Button select mode (Read/Links/Back) |
+### Glasses Simulator
 
-### Required Video
-
-| File | Description |
-|------|-------------|
-| `docs/videos/demo.mp4` | Full demo: enter URL → page loads on glasses → scroll read → switch to links → follow a link → new page → back navigation |
+| Links Mode |
+|------------|
+| ![Links](docs/images/glass-links.png) |
 
 ---
 
 ## Demo
 
-https://github.com/user-attachments/assets/demo.mp4
-
-[![Watch the demo](docs/images/banner.png)](docs/videos/demo.mp4)
+https://github.com/user-attachments/assets/demo.mov
 
 ---
 
