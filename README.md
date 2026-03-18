@@ -2,6 +2,12 @@
 
 A hands-free web browser for **Even Realities G2 glasses**. Enter a URL on your phone, read web content on your glasses — follow links, navigate back, bookmark pages, all hands-free.
 
+**Try it now** — scan with Even Hub:
+
+<img src="docs/images/qrcode.png" alt="QR Code" width="200" />
+
+**GitHub:** [github.com/fabioglimb/even-browser](https://github.com/fabioglimb/even-browser)
+
 ---
 
 ## Features
