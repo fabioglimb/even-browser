@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router'
 import { useBrowse } from '../hooks/useBrowse'
+import { useTranslation } from '../hooks/useTranslation'
 import { UrlBar } from '../components/shared/UrlBar'
 import { QuickLinks } from '../components/shared/QuickLinks'
 import { BookmarkCard } from '../components/shared/BookmarkCard'
@@ -9,6 +10,7 @@ import { displayUrl } from '../lib/url-utils'
 export function Home() {
   const navigate = useNavigate()
   const { navigateToUrl, loading, bookmarks, removeBookmark } = useBrowse()
+  const { t } = useTranslation()
   const recentUrls = loadRecentUrls()
 
   const handleNavigate = (url: string) => {
@@ -20,7 +22,7 @@ export function Home() {
     <div className="min-h-screen p-4 max-w-lg mx-auto space-y-6">
       {/* Header */}
       <div className="pt-2 pb-2">
-        <p className="text-sm text-text-dim">Browse the web on your G2 glasses</p>
+        <p className="text-sm text-text-dim">{t('app.subtitle')}</p>
       </div>
 
       {/* URL Bar */}
@@ -28,14 +30,14 @@ export function Home() {
 
       {/* Quick Links */}
       <div>
-        <h2 className="text-sm font-medium text-text-dim mb-2">Quick Links</h2>
+        <h2 className="text-sm font-medium text-text-dim mb-2">{t('home.quickLinks')}</h2>
         <QuickLinks onNavigate={handleNavigate} />
       </div>
 
       {/* Bookmarks */}
       {bookmarks.length > 0 && (
         <div>
-          <h2 className="text-sm font-medium text-text-dim mb-2">Bookmarks</h2>
+          <h2 className="text-sm font-medium text-text-dim mb-2">{t('home.bookmarks')}</h2>
           <div className="space-y-2">
             {bookmarks.map((b) => (
               <BookmarkCard
@@ -52,7 +54,7 @@ export function Home() {
       {/* Recent History */}
       {recentUrls.length > 0 && (
         <div>
-          <h2 className="text-sm font-medium text-text-dim mb-2">Recent</h2>
+          <h2 className="text-sm font-medium text-text-dim mb-2">{t('home.recent')}</h2>
           <div className="space-y-1">
             {recentUrls.slice(0, 10).map((url) => (
               <button

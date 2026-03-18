@@ -3,7 +3,8 @@ import { line } from 'even-toolkit/types'
 import { buildActionBar, buildStaticActionBar } from 'even-toolkit/action-bar'
 import { truncate, buildHeaderLine, applyScrollIndicators } from 'even-toolkit/text-utils'
 import { pageIndicator } from 'even-toolkit/paginate-text'
-import type { PageData, ReadMode } from '../types'
+import type { PageData, ReadMode, AppLanguage } from '../types'
+import { t } from '../utils/i18n'
 
 // ── Snapshot ──
 
@@ -17,6 +18,7 @@ export interface BrowseSnapshot {
   readMode: ReadMode
   linesPerPage: number
   showPageNumbers: boolean
+  language: AppLanguage
 }
 
 // ── Mode Encoding ──
@@ -45,42 +47,42 @@ export function buttonIndex(idx: number, buttonCount: number): number {
 
 // ── Button definitions ──
 
-export function getPageButtons(canGoBack: boolean): string[] {
-  const btns = ['Read', 'Links']
-  if (canGoBack) btns.push('Back')
+export function getPageButtons(lang: AppLanguage, canGoBack: boolean): string[] {
+  const btns = [t('glass.read', lang), t('glass.links', lang)]
+  if (canGoBack) btns.push(t('glass.back', lang))
   return btns
 }
 
-export function getErrorButtons(canGoBack: boolean): string[] {
-  const btns = ['Retry']
-  if (canGoBack) btns.push('Back')
+export function getErrorButtons(lang: AppLanguage, canGoBack: boolean): string[] {
+  const btns = [t('glass.retry', lang)]
+  if (canGoBack) btns.push(t('glass.back', lang))
   return btns
 }
 
 // ── Screen: waiting ──
 
-function waitingDisplay(): DisplayData {
+function waitingDisplay(lang: AppLanguage): DisplayData {
   return {
     lines: [
-      line('Enter a URL on your phone', 'meta'),
-      line('to start browsing.', 'meta'),
+      line(t('glass.waiting', lang), 'meta'),
+      line(t('glass.waitingSub', lang), 'meta'),
       line(''),
-      line('Waiting...', 'meta'),
+      line(t('glass.waitingStatus', lang), 'meta'),
     ],
   }
 }
 
 // ── Screen: loading ──
 
-function loadingDisplay(url: string): DisplayData {
+function loadingDisplay(url: string, lang: AppLanguage): DisplayData {
   const domain = truncate(url.replace(/^https?:\/\//, ''), 40)
   return {
     lines: [
-      line('Loading...', 'normal'),
+      line(t('glass.loading', lang), 'normal'),
       line(domain, 'meta'),
       line(''),
       line(''),
-      line(buildStaticActionBar(['Cancel'], 0), 'normal'),
+      line(buildStaticActionBar([t('glass.cancel', lang)], 0), 'normal'),
     ],
   }
 }
@@ -91,11 +93,12 @@ const CONTENT_SLOTS = 8
 
 function pageViewDisplay(page: PageData, snapshot: BrowseSnapshot, nav: GlassNavState): DisplayData {
   const mode = browseMode(nav.highlightedIndex)
-  const buttons = getPageButtons(snapshot.canGoBack)
+  const lang = snapshot.language
+  const buttons = getPageButtons(lang, snapshot.canGoBack)
   const btnIdx = buttonIndex(nav.highlightedIndex, buttons.length)
 
   // Header: title + action bar
-  const activeLabel = mode === 'read' ? 'Read' : mode === 'links' ? 'Links' : null
+  const activeLabel = mode === 'read' ? t('glass.read', lang) : mode === 'links' ? t('glass.links', lang) : null
   const actionBar = buildActionBar(buttons, btnIdx, activeLabel, snapshot.flashPhase)
   const headerLine = buildHeaderLine(truncate(page.title, 20), actionBar)
 
@@ -107,7 +110,7 @@ function pageViewDisplay(page: PageData, snapshot: BrowseSnapshot, nav: GlassNav
     const totalLinks = page.links.length
     if (totalLinks === 0) {
       lines.push(line(''))
-      lines.push(line('No links found on this page.', 'meta'))
+      lines.push(line(t('glass.noLinks', lang), 'meta'))
       return { lines }
     }
 
@@ -172,7 +175,8 @@ function pageViewDisplay(page: PageData, snapshot: BrowseSnapshot, nav: GlassNav
 // ── Screen: error ──
 
 function errorDisplay(error: string, url: string | null, snapshot: BrowseSnapshot, nav: GlassNavState): DisplayData {
-  const buttons = getErrorButtons(snapshot.canGoBack)
+  const lang = snapshot.language
+  const buttons = getErrorButtons(lang, snapshot.canGoBack)
   const btnIdx = buttonIndex(nav.highlightedIndex, buttons.length)
   const headerLine = buildHeaderLine('EVEN BROWSER', buildStaticActionBar(buttons, btnIdx))
   const domain = url ? truncate(url.replace(/^https?:\/\//, ''), 40) : ''
@@ -181,7 +185,7 @@ function errorDisplay(error: string, url: string | null, snapshot: BrowseSnapsho
     lines: [
       line(headerLine, 'normal', false),
       line(''),
-      line('Failed to load page:', 'meta'),
+      line(t('glass.failedToLoad', lang), 'meta'),
       line(truncate(error, 46), 'meta'),
       line(''),
       line(domain, 'meta'),
@@ -192,10 +196,11 @@ function errorDisplay(error: string, url: string | null, snapshot: BrowseSnapsho
 // ── Router ──
 
 export function toDisplayData(snapshot: BrowseSnapshot, nav: GlassNavState): DisplayData {
+  const lang = snapshot.language
   switch (nav.screen) {
     case 'page-view': {
       if (snapshot.loading) {
-        return loadingDisplay(snapshot.loadingUrl || '')
+        return loadingDisplay(snapshot.loadingUrl || '', lang)
       }
       if (snapshot.error && !snapshot.currentPage) {
         return errorDisplay(snapshot.error, snapshot.loadingUrl || null, snapshot, nav)
@@ -206,11 +211,11 @@ export function toDisplayData(snapshot: BrowseSnapshot, nav: GlassNavState): Dis
       if (snapshot.currentPage) {
         return pageViewDisplay(snapshot.currentPage, snapshot, nav)
       }
-      return waitingDisplay()
+      return waitingDisplay(lang)
     }
     case 'waiting':
     default:
-      return waitingDisplay()
+      return waitingDisplay(lang)
   }
 }
 

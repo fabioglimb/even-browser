@@ -46,9 +46,23 @@ export interface Bookmark {
 }
 
 export type ReadMode = 'scroll' | 'page'
+export type AppLanguage = 'en' | 'it' | 'es' | 'fr' | 'de' | 'pt' | 'ja' | 'zh' | 'ko'
+
+export const APP_LANGUAGES: { id: AppLanguage; name: string }[] = [
+  { id: 'en', name: 'English' },
+  { id: 'it', name: 'Italiano' },
+  { id: 'es', name: 'Espanol' },
+  { id: 'fr', name: 'Francais' },
+  { id: 'de', name: 'Deutsch' },
+  { id: 'pt', name: 'Portugues' },
+  { id: 'ja', name: 'Japanese' },
+  { id: 'zh', name: 'Chinese' },
+  { id: 'ko', name: 'Korean' },
+]
 
 export interface BrowseSettings {
   linesPerPage: number
   showPageNumbers: boolean
   readMode: ReadMode
+  language: AppLanguage
 }

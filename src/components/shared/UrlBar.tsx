@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '../ui/Button'
 import { normalizeUrl } from '../../lib/url-utils'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface UrlBarProps {
   onNavigate: (url: string) => void
@@ -10,6 +11,7 @@ interface UrlBarProps {
 
 export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
   const [input, setInput] = useState(initialUrl)
+  const { t } = useTranslation()
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -37,7 +39,7 @@ export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter URL (e.g. wikipedia.org)"
+          placeholder={t('url.placeholder')}
           className="h-11 w-full rounded-lg border border-border bg-surface px-4 pr-20 text-sm text-text placeholder:text-text-muted transition-colors focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 font-mono"
           autoCapitalize="off"
           autoCorrect="off"
@@ -48,11 +50,11 @@ export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
           onClick={handlePaste}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-text-dim hover:text-text px-2 py-1 rounded transition-colors"
         >
-          Paste
+          {t('url.paste')}
         </button>
       </div>
       <Button type="submit" disabled={loading || !input.trim()} size="lg">
-        {loading ? 'Loading...' : 'Go'}
+        {loading ? t('url.loading') : t('url.go')}
       </Button>
     </form>
   )

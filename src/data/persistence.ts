@@ -50,6 +50,7 @@ const DEFAULT_SETTINGS: BrowseSettings = {
   linesPerPage: 7,
   showPageNumbers: true,
   readMode: 'scroll',
+  language: 'en',
 }
 
 export function loadSettings(): BrowseSettings {

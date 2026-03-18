@@ -1,25 +1,46 @@
-import { useNavigate } from 'react-router'
 import { useBrowse } from '../hooks/useBrowse'
+import { useTranslation } from '../hooks/useTranslation'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
+import { APP_LANGUAGES, type AppLanguage } from '../types'
 
 export function Settings() {
-  const navigate = useNavigate()
   const { settings, setSettings, bookmarks, clearHistory } = useBrowse()
+  const { t } = useTranslation()
 
   return (
     <div className="min-h-screen p-4 max-w-lg mx-auto space-y-6">
       <div className="pt-2">
-        <h1 className="text-2xl font-semibold text-text">Settings</h1>
+        <h1 className="text-2xl font-semibold text-text">{t('settings.title')}</h1>
       </div>
+
+      {/* Language */}
+      <Card className="space-y-4">
+        <h2 className="text-sm font-medium text-text-dim">{t('settings.language')}</h2>
+        <div className="grid grid-cols-3 gap-2">
+          {APP_LANGUAGES.map((lang) => (
+            <button
+              key={lang.id}
+              onClick={() => setSettings({ ...settings, language: lang.id })}
+              className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                settings.language === lang.id
+                  ? 'bg-accent text-white'
+                  : 'bg-surface-light text-text-dim hover:text-text'
+              }`}
+            >
+              {lang.name}
+            </button>
+          ))}
+        </div>
+      </Card>
 
       {/* Display Settings */}
       <Card className="space-y-4">
-        <h2 className="text-sm font-medium text-text-dim">Display</h2>
+        <h2 className="text-sm font-medium text-text-dim">{t('settings.display')}</h2>
 
         {/* Read Mode */}
         <div className="space-y-2">
-          <span className="text-sm text-text">Read mode</span>
+          <span className="text-sm text-text">{t('settings.readMode')}</span>
           <div className="flex gap-2">
             <button
               onClick={() => setSettings({ ...settings, readMode: 'scroll' })}
@@ -29,7 +50,7 @@ export function Settings() {
                   : 'bg-surface-light text-text-dim hover:text-text'
               }`}
             >
-              Scroll
+              {t('settings.scroll')}
             </button>
             <button
               onClick={() => setSettings({ ...settings, readMode: 'page' })}
@@ -39,19 +60,17 @@ export function Settings() {
                   : 'bg-surface-light text-text-dim hover:text-text'
               }`}
             >
-              Page
+              {t('settings.page')}
             </button>
           </div>
           <p className="text-xs text-text-muted">
-            {settings.readMode === 'scroll'
-              ? 'Scroll line by line through content'
-              : 'Flip through fixed pages with page indicator'}
+            {settings.readMode === 'scroll' ? t('settings.scrollDesc') : t('settings.pageDesc')}
           </p>
         </div>
 
-        {/* Lines per page (only relevant in page mode) */}
+        {/* Lines per page */}
         <div className={`flex items-center justify-between ${settings.readMode === 'scroll' ? 'opacity-40' : ''}`}>
-          <span className="text-sm text-text">Lines per page</span>
+          <span className="text-sm text-text">{t('settings.linesPerPage')}</span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSettings({ ...settings, linesPerPage: Math.max(3, settings.linesPerPage - 1) })}
@@ -71,9 +90,9 @@ export function Settings() {
           </div>
         </div>
 
-        {/* Show page numbers (only relevant in page mode) */}
+        {/* Show page numbers */}
         <div className={`flex items-center justify-between ${settings.readMode === 'scroll' ? 'opacity-40' : ''}`}>
-          <span className="text-sm text-text">Show page numbers</span>
+          <span className="text-sm text-text">{t('settings.showPageNumbers')}</span>
           <button
             onClick={() => setSettings({ ...settings, showPageNumbers: !settings.showPageNumbers })}
             disabled={settings.readMode === 'scroll'}
@@ -90,21 +109,21 @@ export function Settings() {
 
       {/* Data */}
       <Card className="space-y-4">
-        <h2 className="text-sm font-medium text-text-dim">Data</h2>
+        <h2 className="text-sm font-medium text-text-dim">{t('settings.data')}</h2>
         <div className="flex items-center justify-between">
-          <span className="text-sm text-text">Bookmarks</span>
-          <span className="text-sm text-text-dim">{bookmarks.length} saved</span>
+          <span className="text-sm text-text">{t('home.bookmarks')}</span>
+          <span className="text-sm text-text-dim">{bookmarks.length} {t('settings.bookmarksSaved')}</span>
         </div>
         <Button variant="outline" size="sm" onClick={clearHistory}>
-          Clear Browsing History
+          {t('settings.clearHistory')}
         </Button>
       </Card>
 
       {/* About */}
       <Card className="space-y-2">
-        <h2 className="text-sm font-medium text-text-dim">About</h2>
+        <h2 className="text-sm font-medium text-text-dim">{t('settings.about')}</h2>
         <p className="text-sm text-text">Even Browser v1.0.0</p>
-        <p className="text-xs text-text-muted">Web browser for Even Realities G2 smart glasses</p>
+        <p className="text-xs text-text-muted">{t('settings.aboutText')}</p>
       </Card>
 
       <div className="pb-8" />

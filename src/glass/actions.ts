@@ -13,6 +13,7 @@ import {
   MODE_READ,
   MODE_LINKS,
 } from './selectors'
+import { t } from '../utils/i18n'
 
 type Navigate = (path: string) => void
 
@@ -58,7 +59,8 @@ export function createActionHandler(navigate: Navigate, actions: BrowseActions) 
         if (!snapshot.currentPage) return nav
 
         const mode = browseMode(nav.highlightedIndex)
-        const buttons = getPageButtons(snapshot.canGoBack)
+        const lang = snapshot.language
+        const buttons = getPageButtons(lang, snapshot.canGoBack)
 
         // ── Button select mode ──
         if (mode === 'buttons') {
@@ -71,13 +73,13 @@ export function createActionHandler(navigate: Navigate, actions: BrowseActions) 
           if (action.type === 'SELECT_HIGHLIGHTED') {
             const btnIdx = buttonIndex(nav.highlightedIndex, buttons.length)
             const selected = buttons[btnIdx]
-            if (selected === 'Read') {
+            if (selected === t('glass.read', lang)) {
               return { ...nav, highlightedIndex: MODE_READ }
             }
-            if (selected === 'Links') {
+            if (selected === t('glass.links', lang)) {
               return { ...nav, highlightedIndex: MODE_LINKS }
             }
-            if (selected === 'Back') {
+            if (selected === t('glass.back', lang)) {
               actions.goBack()
               return { ...nav, highlightedIndex: 0 }
             }
@@ -116,7 +118,7 @@ export function createActionHandler(navigate: Navigate, actions: BrowseActions) 
             }
           }
           if (action.type === 'SELECT_HIGHLIGHTED' || action.type === 'GO_BACK') {
-            const readIdx = buttons.indexOf('Read')
+            const readIdx = buttons.indexOf(t('glass.read', lang))
             return { ...nav, highlightedIndex: readIdx >= 0 ? readIdx : 0 }
           }
           return nav
@@ -142,7 +144,7 @@ export function createActionHandler(navigate: Navigate, actions: BrowseActions) 
             return nav
           }
           if (action.type === 'GO_BACK') {
-            const linksIdx = buttons.indexOf('Links')
+            const linksIdx = buttons.indexOf(t('glass.links', lang))
             return { ...nav, highlightedIndex: linksIdx >= 0 ? linksIdx : 0 }
           }
           return nav
@@ -164,7 +166,8 @@ function handleError(
   navigate: Navigate,
   actions: BrowseActions,
 ): GlassNavState {
-  const buttons = getErrorButtons(snapshot.canGoBack)
+  const lang = snapshot.language
+  const buttons = getErrorButtons(lang, snapshot.canGoBack)
 
   if (action.type === 'HIGHLIGHT_MOVE') {
     const btnIdx = buttonIndex(nav.highlightedIndex, buttons.length)
@@ -175,11 +178,11 @@ function handleError(
   if (action.type === 'SELECT_HIGHLIGHTED') {
     const btnIdx = buttonIndex(nav.highlightedIndex, buttons.length)
     const selected = buttons[btnIdx]
-    if (selected === 'Retry') {
+    if (selected === t('glass.retry', lang)) {
       actions.retry()
       return nav
     }
-    if (selected === 'Back') {
+    if (selected === t('glass.back', lang)) {
       actions.goBack()
       return { ...nav, highlightedIndex: 0 }
     }

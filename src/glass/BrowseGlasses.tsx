@@ -49,6 +49,7 @@ export function BrowseGlasses() {
     readMode: settings.readMode,
     linesPerPage: settings.linesPerPage,
     showPageNumbers: settings.showPageNumbers,
+    language: settings.language,
   }
   snapshotRef.current = snapshot
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router'
 import { useBrowse } from '../hooks/useBrowse'
+import { useTranslation } from '../hooks/useTranslation'
 import { LinkList } from '../components/shared/LinkList'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
@@ -9,6 +10,7 @@ import { displayUrl } from '../lib/url-utils'
 
 export function PageView() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const {
     currentPage,
     loading,
@@ -42,7 +44,7 @@ export function PageView() {
       <div className="min-h-screen p-4 max-w-lg mx-auto">
         <div className="pt-6 space-y-4">
           <button onClick={handleBack} className="text-sm text-text-dim hover:text-text transition-colors">
-            &larr; Back
+            &larr; {t('page.back')}
           </button>
           <div className="space-y-3">
             <div className="h-4 bg-surface-light rounded animate-pulse w-3/4" />
@@ -53,7 +55,7 @@ export function PageView() {
               ))}
             </div>
             <Button variant="outline" size="sm" onClick={() => { cancelLoading(); handleBack() }}>
-              Cancel
+              {t('page.cancel')}
             </Button>
           </div>
         </div>
@@ -67,14 +69,14 @@ export function PageView() {
       <div className="min-h-screen p-4 max-w-lg mx-auto">
         <div className="pt-6 space-y-4">
           <button onClick={handleBack} className="text-sm text-text-dim hover:text-text transition-colors">
-            &larr; Back
+            &larr; {t('page.back')}
           </button>
           <Card variant="elevated" className="space-y-3">
-            <h2 className="text-lg font-medium text-red-400">Failed to load page</h2>
+            <h2 className="text-lg font-medium text-red-400">{t('page.failedToLoad')}</h2>
             <p className="text-sm text-text-dim">{error}</p>
             <div className="flex gap-2">
-              <Button onClick={retry} size="sm">Retry</Button>
-              <Button variant="outline" size="sm" onClick={handleBack}>Go Back</Button>
+              <Button onClick={retry} size="sm">{t('page.retry')}</Button>
+              <Button variant="outline" size="sm" onClick={handleBack}>{t('page.goBack')}</Button>
             </div>
           </Card>
         </div>
@@ -96,7 +98,7 @@ export function PageView() {
         {/* Top bar */}
         <div className="flex items-center justify-between gap-2">
           <button onClick={handleBack} className="text-sm text-text-dim hover:text-text transition-colors shrink-0">
-            &larr; Back
+            &larr; {t('page.back')}
           </button>
           <div className="text-xs text-text-muted truncate font-mono flex-1 text-center">
             {displayUrl(currentPage.url)}
@@ -105,7 +107,7 @@ export function PageView() {
             onClick={() => bookmarked ? removeBookmark(currentPage.url) : addBookmark(currentPage.url, currentPage.title)}
             className={`text-sm shrink-0 transition-colors ${bookmarked ? 'text-accent' : 'text-text-dim hover:text-text'}`}
           >
-            {bookmarked ? 'Saved' : 'Save'}
+            {bookmarked ? t('page.saved') : t('page.save')}
           </button>
         </div>
 
@@ -113,8 +115,8 @@ export function PageView() {
         <div>
           <h1 className="text-xl font-semibold text-text">{currentPage.title}</h1>
           <div className="flex gap-2 mt-2">
-            <Badge>{currentPage.links.length} links</Badge>
-            <Badge>{currentPage.lines.length} lines</Badge>
+            <Badge>{currentPage.links.length} {t('page.links')}</Badge>
+            <Badge>{currentPage.lines.length} {t('page.lines')}</Badge>
           </div>
         </div>
 
@@ -138,7 +140,7 @@ export function PageView() {
         {/* Links section */}
         {currentPage.links.length > 0 && (
           <div>
-            <h2 className="text-sm font-medium text-text-dim mb-2">Links ({currentPage.links.length})</h2>
+            <h2 className="text-sm font-medium text-text-dim mb-2">{t('page.linksTitle')} ({currentPage.links.length})</h2>
             <Card padding="none" className="max-h-64 overflow-y-auto">
               <LinkList links={currentPage.links} onNavigate={handleNavigate} />
             </Card>
@@ -149,7 +151,7 @@ export function PageView() {
         {error && (
           <Card className="bg-red-600/10 border-red-600/20">
             <p className="text-sm text-red-400">{error}</p>
-            <Button onClick={retry} size="sm" className="mt-2">Retry</Button>
+            <Button onClick={retry} size="sm" className="mt-2">{t('page.retry')}</Button>
           </Card>
         )}
 
