@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/__browse_proxy", "destination": "/api/browse-proxy" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
