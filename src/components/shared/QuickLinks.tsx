@@ -1,5 +1,5 @@
 import { quickLinks } from '../../data/quick-links'
-import { Card } from '../ui/Card'
+import { Card } from 'even-toolkit/web'
 
 interface QuickLinksProps {
   onNavigate: (url: string) => void
@@ -7,17 +7,17 @@ interface QuickLinksProps {
 
 export function QuickLinks({ onNavigate }: QuickLinksProps) {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 gap-3 mt-3">
       {quickLinks.map((link) => (
         <Card
           key={link.url}
           variant="interactive"
           padding="sm"
-          className="cursor-pointer active:scale-[0.98]"
+          className="cursor-pointer"
           onClick={() => onNavigate(link.url)}
         >
-          <div className="text-sm font-medium text-text">{link.label}</div>
-          <div className="text-xs text-text-dim mt-0.5">{link.description}</div>
+          <div className="text-[15px] tracking-[-0.15px] font-normal text-text">{link.label}</div>
+          <div className="text-[13px] tracking-[-0.13px] text-text-dim mt-0.5">{link.description}</div>
         </Card>
       ))}
     </div>

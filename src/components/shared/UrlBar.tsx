@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button } from '../ui/Button'
+import { Input, Button } from 'even-toolkit/web'
 import { normalizeUrl } from '../../lib/url-utils'
 import { useTranslation } from '../../hooks/useTranslation'
 
@@ -35,25 +35,25 @@ export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
   return (
     <form onSubmit={handleSubmit} className="flex gap-2">
       <div className="relative flex-1">
-        <input
+        <Input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t('url.placeholder')}
-          className="h-11 w-full rounded-lg border border-border bg-surface px-4 pr-20 text-sm text-text placeholder:text-text-muted transition-colors focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 font-mono"
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck={false}
+          className="pr-16 font-mono"
         />
         <button
           type="button"
           onClick={handlePaste}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-text-dim hover:text-text px-2 py-1 rounded transition-colors"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] tracking-[-0.11px] text-text-dim hover:text-text transition-colors cursor-pointer"
         >
           {t('url.paste')}
         </button>
       </div>
-      <Button type="submit" disabled={loading || !input.trim()} size="lg">
+      <Button type="submit" variant="highlight" size="sm" disabled={loading || !input.trim()}>
         {loading ? t('url.loading') : t('url.go')}
       </Button>
     </form>

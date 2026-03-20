@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router'
 import { useBrowse } from '../hooks/useBrowse'
 import { useTranslation } from '../hooks/useTranslation'
 import { LinkList } from '../components/shared/LinkList'
-import { Button } from '../components/ui/Button'
-import { Badge } from '../components/ui/Badge'
-import { Card } from '../components/ui/Card'
+import { AppShell, NavHeader, Button, Badge, Card, Divider, EmptyState, Loading, SectionHeader } from 'even-toolkit/web'
+import { IcChevronBack } from 'even-toolkit/web/icons/svg-icons'
 import { displayUrl } from '../lib/url-utils'
 
 export function PageView() {
@@ -38,49 +37,41 @@ export function PageView() {
     }
   }
 
+  const backButton = (
+    <Button variant="ghost" size="icon" onClick={handleBack}>
+      <IcChevronBack width={20} height={20} />
+    </Button>
+  )
+
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen p-4 max-w-lg mx-auto">
-        <div className="pt-6 space-y-4">
-          <button onClick={handleBack} className="text-sm text-text-dim hover:text-text transition-colors">
-            &larr; {t('page.back')}
-          </button>
-          <div className="space-y-3">
-            <div className="h-4 bg-surface-light rounded animate-pulse w-3/4" />
-            <div className="text-sm text-text-dim font-mono">{loadingUrl && displayUrl(loadingUrl)}</div>
-            <div className="space-y-2">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-3 bg-surface-light rounded animate-pulse" style={{ width: `${70 + Math.random() * 30}%` }} />
-              ))}
-            </div>
-            <Button variant="outline" size="sm" onClick={() => { cancelLoading(); handleBack() }}>
-              {t('page.cancel')}
-            </Button>
+      <AppShell header={<NavHeader title={t('page.loading') || "Loading..."} left={backButton} />}>
+        <div className="px-3 pt-4 pb-8 space-y-4">
+          <div className="text-[13px] tracking-[-0.13px] text-text-dim font-mono">{loadingUrl && displayUrl(loadingUrl)}</div>
+          <div className="flex justify-center py-8">
+            <Loading size={48} />
           </div>
+          <Button variant="default" size="sm" onClick={() => { cancelLoading(); handleBack() }}>
+            {t('page.cancel')}
+          </Button>
         </div>
-      </div>
+      </AppShell>
     )
   }
 
   // Error state
   if (error && !currentPage) {
     return (
-      <div className="min-h-screen p-4 max-w-lg mx-auto">
-        <div className="pt-6 space-y-4">
-          <button onClick={handleBack} className="text-sm text-text-dim hover:text-text transition-colors">
-            &larr; {t('page.back')}
-          </button>
-          <Card variant="elevated" className="space-y-3">
-            <h2 className="text-lg font-medium text-red-400">{t('page.failedToLoad')}</h2>
-            <p className="text-sm text-text-dim">{error}</p>
-            <div className="flex gap-2">
-              <Button onClick={retry} size="sm">{t('page.retry')}</Button>
-              <Button variant="outline" size="sm" onClick={handleBack}>{t('page.goBack')}</Button>
-            </div>
-          </Card>
+      <AppShell header={<NavHeader title={t('page.failedToLoad')} left={backButton} />}>
+        <div className="px-3 pt-4 pb-8 space-y-4">
+          <EmptyState title={t('page.failedToLoad')} description={error} />
+          <div className="flex gap-2 justify-center">
+            <Button onClick={retry} size="sm">{t('page.retry')}</Button>
+            <Button variant="default" size="sm" onClick={handleBack}>{t('page.goBack')}</Button>
+          </div>
         </div>
-      </div>
+      </AppShell>
     )
   }
 
@@ -93,27 +84,28 @@ export function PageView() {
   const bookmarked = isBookmarked(currentPage.url)
 
   return (
-    <div className="min-h-screen p-4 max-w-lg mx-auto">
-      <div className="pt-6 space-y-4">
-        {/* Top bar */}
-        <div className="flex items-center justify-between gap-2">
-          <button onClick={handleBack} className="text-sm text-text-dim hover:text-text transition-colors shrink-0">
-            &larr; {t('page.back')}
-          </button>
-          <div className="text-xs text-text-muted truncate font-mono flex-1 text-center">
-            {displayUrl(currentPage.url)}
-          </div>
-          <button
+    <AppShell header={
+      <NavHeader
+        title={currentPage.title}
+        left={backButton}
+        right={
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => bookmarked ? removeBookmark(currentPage.url) : addBookmark(currentPage.url, currentPage.title)}
-            className={`text-sm shrink-0 transition-colors ${bookmarked ? 'text-accent' : 'text-text-dim hover:text-text'}`}
+            className={bookmarked ? 'text-accent' : ''}
           >
             {bookmarked ? t('page.saved') : t('page.save')}
-          </button>
-        </div>
-
-        {/* Page title */}
+          </Button>
+        }
+      />
+    }>
+      <div className="px-3 pt-4 pb-8 space-y-4">
+        {/* URL and badges */}
         <div>
-          <h1 className="text-xl font-semibold text-text">{currentPage.title}</h1>
+          <div className="text-[11px] tracking-[-0.11px] text-text-muted truncate font-mono">
+            {displayUrl(currentPage.url)}
+          </div>
           <div className="flex gap-2 mt-2">
             <Badge>{currentPage.links.length} {t('page.links')}</Badge>
             <Badge>{currentPage.lines.length} {t('page.lines')}</Badge>
@@ -124,13 +116,13 @@ export function PageView() {
         <Card padding="sm" className="space-y-1 max-h-64 overflow-y-auto">
           {currentPage.blocks.slice(0, 50).map((block, i) => {
             if (block.type === 'separator') {
-              return <hr key={i} className="border-border my-2" />
+              return <Divider key={i} />
             }
             if (block.type === 'heading') {
-              return <h3 key={i} className="text-sm font-semibold text-text mt-2">{block.text}</h3>
+              return <h3 key={i} className="text-[13px] tracking-[-0.13px] font-normal text-text mt-2">{block.text}</h3>
             }
             return (
-              <p key={i} className="text-xs text-text-dim leading-relaxed">
+              <p key={i} className="text-[11px] tracking-[-0.11px] text-text-dim leading-relaxed">
                 {renderTextWithLinks(block.text, currentPage.links, handleNavigate)}
               </p>
             )
@@ -140,7 +132,7 @@ export function PageView() {
         {/* Links section */}
         {currentPage.links.length > 0 && (
           <div>
-            <h2 className="text-sm font-medium text-text-dim mb-2">{t('page.linksTitle')} ({currentPage.links.length})</h2>
+            <SectionHeader title={`${t('page.linksTitle')} (${currentPage.links.length})`} />
             <Card padding="none" className="max-h-64 overflow-y-auto">
               <LinkList links={currentPage.links} onNavigate={handleNavigate} />
             </Card>
@@ -149,15 +141,13 @@ export function PageView() {
 
         {/* Error banner (if error but page still shown) */}
         {error && (
-          <Card className="bg-red-600/10 border-red-600/20">
-            <p className="text-sm text-red-400">{error}</p>
+          <Card className="bg-negative-alpha border-negative">
+            <p className="text-[13px] tracking-[-0.13px] text-negative">{error}</p>
             <Button onClick={retry} size="sm" className="mt-2">{t('page.retry')}</Button>
           </Card>
         )}
-
-        <div className="pb-8" />
       </div>
-    </div>
+    </AppShell>
   )
 }
 
@@ -176,13 +166,16 @@ function renderTextWithLinks(text: string, links: { text: string; href: string }
       parts.push(remaining.slice(0, idx))
     }
     parts.push(
-      <button
+      <span
         key={key++}
+        role="link"
+        tabIndex={0}
         onClick={() => onNavigate(link.href)}
-        className="text-accent hover:underline inline"
+        onKeyDown={(e) => { if (e.key === 'Enter') onNavigate(link.href) }}
+        className="text-accent hover:underline inline cursor-pointer"
       >
         {link.text}
-      </button>
+      </span>
     )
     remaining = remaining.slice(idx + marker.length)
   }
