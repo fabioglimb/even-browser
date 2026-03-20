@@ -5,7 +5,7 @@ import { UrlBar } from '../components/shared/UrlBar'
 import { QuickLinks } from '../components/shared/QuickLinks'
 import { loadRecentUrls } from '../data/persistence'
 import { displayUrl } from '../lib/url-utils'
-import { AppShell, Button, SectionHeader, ListItem } from 'even-toolkit/web'
+import { AppShell, ScreenHeader, Button, SectionHeader, ListItem } from 'even-toolkit/web'
 
 export function Home() {
   const navigate = useNavigate()
@@ -22,16 +22,16 @@ export function Home() {
     <AppShell
       header={
         <div className="px-3">
-          <header className="mt-4 mb-3 flex items-center justify-between">
-            <h1 className="text-[24px] tracking-[-0.72px] font-normal">EvenBrowser</h1>
-            <Button variant="default" size="sm" onClick={() => navigate('/settings')}>
-              Settings
-            </Button>
-          </header>
+          <ScreenHeader
+            title="EvenBrowser"
+            actions={
+              <Button size="sm" onClick={() => navigate('/settings')}>Settings</Button>
+            }
+          />
         </div>
       }
     >
-      <div className="px-3 pb-8">
+      <div className="px-3 pt-4 pb-8">
         {/* URL Bar */}
         <UrlBar onNavigate={handleNavigate} loading={loading} />
 
