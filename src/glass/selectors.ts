@@ -1,7 +1,7 @@
 import type { DisplayData, GlassNavState } from 'even-toolkit/types'
-import { line } from 'even-toolkit/types'
+import { line, glassHeader } from 'even-toolkit/types'
 import { buildActionBar, buildStaticActionBar } from 'even-toolkit/action-bar'
-import { truncate, buildHeaderLine, applyScrollIndicators } from 'even-toolkit/text-utils'
+import { truncate, applyScrollIndicators } from 'even-toolkit/text-utils'
 import { pageIndicator } from 'even-toolkit/paginate-text'
 import type { PageData, ReadMode, AppLanguage } from '../types'
 import { t } from '../utils/i18n'
@@ -89,7 +89,8 @@ function loadingDisplay(url: string, lang: AppLanguage): DisplayData {
 
 // ── Screen: page-view ──
 
-const CONTENT_SLOTS = 8
+const G2_TEXT_LINES = 10
+const CONTENT_SLOTS = G2_TEXT_LINES - 3 // glassHeader = 3 visual lines
 
 function pageViewDisplay(page: PageData, snapshot: BrowseSnapshot, nav: GlassNavState): DisplayData {
   const mode = browseMode(nav.highlightedIndex)
@@ -100,9 +101,8 @@ function pageViewDisplay(page: PageData, snapshot: BrowseSnapshot, nav: GlassNav
   // Header: title + action bar
   const activeLabel = mode === 'read' ? t('glass.read', lang) : mode === 'links' ? t('glass.links', lang) : null
   const actionBar = buildActionBar(buttons, btnIdx, activeLabel, snapshot.flashPhase)
-  const headerLine = buildHeaderLine(truncate(page.title, 20), actionBar)
 
-  const lines = [line(headerLine, 'normal', false), line('')]
+  const lines = [...glassHeader(truncate(page.title, 20), actionBar)]
 
   if (mode === 'links') {
     // Link list view
@@ -178,13 +178,11 @@ function errorDisplay(error: string, url: string | null, snapshot: BrowseSnapsho
   const lang = snapshot.language
   const buttons = getErrorButtons(lang, snapshot.canGoBack)
   const btnIdx = buttonIndex(nav.highlightedIndex, buttons.length)
-  const headerLine = buildHeaderLine('EVEN BROWSER', buildStaticActionBar(buttons, btnIdx))
   const domain = url ? truncate(url.replace(/^https?:\/\//, ''), 40) : ''
 
   return {
     lines: [
-      line(headerLine, 'normal', false),
-      line(''),
+      ...glassHeader('EVEN BROWSER', buildStaticActionBar(buttons, btnIdx)),
       line(t('glass.failedToLoad', lang), 'meta'),
       line(truncate(error, 46), 'meta'),
       line(''),
