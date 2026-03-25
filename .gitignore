@@ -3,3 +3,5 @@ node_modules/
 .vite/
 
 app.json
+CLAUDE.md
+.claude/
