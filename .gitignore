@@ -5,3 +5,4 @@ node_modules/
 app.json
 CLAUDE.md
 .claude/
+*.ehpk
