@@ -1,20 +1,18 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { useGlasses } from 'even-toolkit/useGlasses'
 import { useFlashPhase } from 'even-toolkit/useFlashPhase'
+import { createScreenMapper, getHomeTiles } from 'even-toolkit/glass-router'
 import { useBrowseContext } from '../contexts/BrowseContext'
 import { browseSplash } from './splash'
-import { toDisplayData, type BrowseSnapshot } from './selectors'
-import { createActionHandler } from './actions'
+import { toDisplayData, onGlassAction, type BrowseSnapshot } from './selectors'
+import type { BrowseActions } from './shared'
 
-function deriveScreen(path: string): string {
-  if (path === '/browse') return 'page-view'
-  return 'waiting'
-}
+const deriveScreen = createScreenMapper([
+  { pattern: '/browse', screen: 'page-view' },
+], 'waiting')
 
-// Only use the first tile (globe logo) for home — the "Loading..." tile is splash-only
-const allTiles = browseSplash.getTiles()
-const homeTiles = allTiles.length > 0 ? [allTiles[0]!] : []
+const homeTiles = getHomeTiles(browseSplash)
 
 export function BrowseGlasses() {
   const {
@@ -55,20 +53,27 @@ export function BrowseGlasses() {
 
   const getSnapshot = useCallback(() => snapshotRef.current!, [snapshotRef])
 
-  const onGlassAction = useMemo(
-    () => createActionHandler(navigate, {
-      navigateToUrl,
-      goBack,
-      retry,
-      cancelLoading,
-    }),
-    [navigate, navigateToUrl, goBack, retry, cancelLoading],
+  // Build context with side effects for screen action handlers
+  const ctxRef = useRef<BrowseActions>({
+    navigate,
+    navigateToUrl,
+    goBack,
+    retry,
+    cancelLoading,
+  })
+  ctxRef.current = { navigate, navigateToUrl, goBack, retry, cancelLoading }
+
+  // Wrap the router's onGlassAction to inject context
+  const handleGlassAction = useCallback(
+    (action: Parameters<typeof onGlassAction>[0], nav: Parameters<typeof onGlassAction>[1], snap: BrowseSnapshot) =>
+      onGlassAction(action, nav, snap, ctxRef.current),
+    [],
   )
 
   useGlasses({
     getSnapshot,
     toDisplayData,
-    onGlassAction,
+    onGlassAction: handleGlassAction,
     deriveScreen,
     appName: 'EVENBROWSER',
     splash: browseSplash,
