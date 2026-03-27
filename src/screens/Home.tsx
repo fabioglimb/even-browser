@@ -5,7 +5,7 @@ import { UrlBar } from '../components/shared/UrlBar'
 import { QuickLinks } from '../components/shared/QuickLinks'
 import { loadRecentUrls } from '../data/persistence'
 import { displayUrl } from '../lib/url-utils'
-import { AppShell, ScreenHeader, Button, SectionHeader, ListItem } from 'even-toolkit/web'
+import { SectionHeader, ListItem, useDrawerHeader } from 'even-toolkit/web'
 
 export function Home() {
   const navigate = useNavigate()
@@ -18,64 +18,53 @@ export function Home() {
     navigate('/browse')
   }
 
+  useDrawerHeader({ title: 'EvenBrowser' })
+
   return (
-    <AppShell
-      header={
-        <div className="px-3">
-          <ScreenHeader
-            title="EvenBrowser"
-            actions={
-              <Button size="sm" onClick={() => navigate('/settings')}>Settings</Button>
-            }
-          />
-        </div>
-      }
-    >
-      <div className="px-3 pt-4 pb-8">
-        {/* URL Bar */}
-        <UrlBar onNavigate={handleNavigate} loading={loading} />
+    <div className="px-3 pt-4 pb-8">
+      {/* URL Bar */}
+      <UrlBar onNavigate={handleNavigate} loading={loading} />
 
-        {/* Quick Links */}
-        <div className="mt-3">
-          <SectionHeader title={t('home.quickLinks')} />
-          <QuickLinks onNavigate={handleNavigate} />
-        </div>
-
-        {/* Bookmarks */}
-        {bookmarks.length > 0 && (
-          <div className="mt-3">
-            <SectionHeader title={t('home.bookmarks')} />
-            <div className="rounded-[6px] overflow-hidden bg-surface">
-              {bookmarks.map((b) => (
-                <ListItem
-                  key={b.url}
-                  title={b.title}
-                  subtitle={b.domain}
-                  onPress={() => handleNavigate(b.url)}
-                  onDelete={() => removeBookmark(b.url)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Recent History */}
-        {recentUrls.length > 0 && (
-          <div className="mt-3">
-            <SectionHeader title={t('home.recent')} />
-            <div className="rounded-[6px] overflow-hidden bg-surface">
-              {recentUrls.slice(0, 10).map((url) => (
-                <ListItem
-                  key={url}
-                  title={displayUrl(url)}
-                  subtitle={url}
-                  onPress={() => handleNavigate(url)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+      {/* Quick Links */}
+      <div className="mt-3">
+        <SectionHeader title={t('home.quickLinks')} />
+        <QuickLinks onNavigate={handleNavigate} />
       </div>
-    </AppShell>
+
+      {/* Bookmarks */}
+      {bookmarks.length > 0 && (
+        <div className="mt-3">
+          <SectionHeader title={t('home.bookmarks')} />
+          <div className="rounded-[6px] overflow-hidden bg-surface">
+            {bookmarks.map((b) => (
+              <ListItem
+                key={b.url}
+                title={b.title}
+                subtitle={b.domain}
+                onPress={() => handleNavigate(b.url)}
+                onDelete={() => removeBookmark(b.url)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent History */}
+      {recentUrls.length > 0 && (
+        <div className="mt-3">
+          <SectionHeader title={t('home.recent')} />
+          <div className="rounded-[6px] overflow-hidden bg-surface">
+            {recentUrls.slice(0, 10).map((url) => (
+              <ListItem
+                key={url}
+                title={displayUrl(url)}
+                subtitle={url}
+                onPress={() => handleNavigate(url)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
