@@ -105,7 +105,7 @@ export function Settings() {
       {/* About */}
       <SettingsGroup label={t('settings.about')}>
         <ListItem
-          title="Even Browser v1.0.0"
+          title="ER Browser v1.0.0"
           subtitle={t('settings.aboutText')}
         />
       </SettingsGroup>

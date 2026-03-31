@@ -20,7 +20,10 @@ const DEFAULT_CHARS_PER_LINE = 46
 
 /** Fetch and parse a URL into PageData */
 export async function fetchAndParse(url: string, charsPerLine = DEFAULT_CHARS_PER_LINE): Promise<PageData> {
-  const res = await fetch(`/__browse_proxy?url=${encodeURIComponent(url)}`)
+  const proxyBase = import.meta.env.VITE_EHPK
+    ? 'https://even-browser.vercel.app/__browse_proxy'
+    : '/__browse_proxy';
+  const res = await fetch(`${proxyBase}?url=${encodeURIComponent(url)}`)
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}: ${res.statusText}`)
   }

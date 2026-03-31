@@ -75,7 +75,7 @@ export function BrowseGlasses() {
     toDisplayData,
     onGlassAction: handleGlassAction,
     deriveScreen,
-    appName: 'EVENBROWSER',
+    appName: 'ER BROWSER',
     splash: browseSplash,
     getPageMode: (screen) => screen === 'waiting' ? 'home' : 'text',
     homeImageTiles: homeTiles,

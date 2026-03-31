@@ -10,7 +10,7 @@ const BOTTOM_ITEMS: SideDrawerItem[] = [
 ];
 
 function getPageTitle(pathname: string): string {
-  if (pathname === '/') return 'EvenBrowser';
+  if (pathname === '/') return 'ER Browser';
   if (pathname === '/browse') return 'Browse';
   if (pathname === '/settings') return 'Settings';
   return 'Browser';
@@ -28,7 +28,7 @@ export function Shell() {
     <DrawerShell
       items={MENU_ITEMS}
       bottomItems={BOTTOM_ITEMS}
-      title="EvenBrowser"
+      title="ER Browser"
       getPageTitle={getPageTitle}
       deriveActiveId={deriveActiveId}
     />

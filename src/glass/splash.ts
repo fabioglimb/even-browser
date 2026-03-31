@@ -1,73 +1,78 @@
 import { createSplash, TILE_PRESETS } from 'even-toolkit/splash'
 
-/**
- * Browse splash renderer — globe icon + app name.
- * Single tile (200x100), top-center on display.
- * "LOADING..." is shown as text in the menu container below.
- * Reusable: used for both G2 glasses splash and web hero canvas.
- */
-export function renderBrowseSplash(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  const fg = '#e0e0e0'
-  const dim = '#808080'
-  const cx = w / 2
+// Exact pixel grid extracted from Even Hub icon (24x24)
+const BROWSER_ICON = [
+  '........................',
+  '.......##########.......',
+  '.......##########.......',
+  '.....##....##....##.....',
+  '.....##....##....##.....',
+  '...##....##..##....##...',
+  '...##....##..##....##...',
+  '.##....##......##....##.',
+  '.##....##......##....##.',
+  '.##....##......##....##.',
+  '.##....##......##....##.',
+  '.######################.',
+  '.######################.',
+  '.##....##............##.',
+  '.##....##........##.....',
+  '.##....##........####...',
+  '.##....##........####...',
+  '...##....##..##..######.',
+  '...##....##..##..######.',
+  '.....##....##....####...',
+  '.....##....##....####...',
+  '.......########..####...',
+  '.......########..##.##..',
+  '....................##..',
+]
 
-  // Scale factor (designed for 200x200 canvas, tile 1 = top 100px, tile 2 = bottom 100px)
-  const s = Math.min(w / 200, h / 200)
-
-  // ── Tile 1: Globe + Name (top 100px) ──
-
-  const globeMidY = 40 * s
-
-  // Globe outer circle
-  const r = 22 * s
-  ctx.strokeStyle = fg
-  ctx.lineWidth = 2 * s
-
-  ctx.beginPath()
-  ctx.arc(cx, globeMidY, r, 0, Math.PI * 2)
-  ctx.stroke()
-
-  // Horizontal lines (latitude)
-  for (const offset of [-0.4, 0, 0.4]) {
-    const y = globeMidY + offset * r
-    const halfW = Math.sqrt(r * r - (offset * r) ** 2)
-    ctx.beginPath()
-    ctx.moveTo(cx - halfW, y)
-    ctx.lineTo(cx + halfW, y)
-    ctx.stroke()
+function drawPixelGrid(
+  ctx: CanvasRenderingContext2D,
+  grid: string[],
+  w: number,
+  h: number,
+  color: string,
+) {
+  const rows = grid.length
+  const cols = grid[0]!.length
+  const tileH = Math.min(h, w / 2)
+  const iconH = tileH
+  const cell = Math.min(w / cols, iconH / rows)
+  const ox = (w - cols * cell) / 2
+  const oy = (iconH - rows * cell) / 2
+  ctx.fillStyle = color
+  for (let r = 0; r < rows; r++) {
+    const row = grid[r]!
+    for (let c = 0; c < cols; c++) {
+      if (row[c] === '#') {
+        ctx.fillRect(ox + c * cell, oy + r * cell, cell + 0.5, cell + 0.5)
+      }
+    }
   }
-
-  // Vertical ellipse (longitude)
-  ctx.beginPath()
-  ctx.ellipse(cx, globeMidY, r * 0.4, r, 0, 0, Math.PI * 2)
-  ctx.stroke()
-
-  // Vertical line (prime meridian)
-  ctx.beginPath()
-  ctx.moveTo(cx, globeMidY - r)
-  ctx.lineTo(cx, globeMidY + r)
-  ctx.stroke()
-
-  // App name (below globe, still in tile 1)
-  ctx.fillStyle = fg
-  ctx.font = `bold ${14 * s}px "Courier New", monospace`
-  ctx.textAlign = 'center'
-  ctx.fillText('EVENBROWSER', cx, 88 * s)
-
-  ctx.textAlign = 'left'
 }
 
 /**
- * G2 glasses splash — 1 image tile (globe + name) top-center,
- * "LOADING..." as centered text in the menu container below.
+ * Browse icon renderer — pixel-art globe.
+ * Exact replica of Even Hub icon.
+ * Reusable: used for both G2 glasses home tile and web hero canvas.
+ */
+export function renderBrowseSplash(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  drawPixelGrid(ctx, BROWSER_ICON, w, h, '#e0e0e0')
+
+}
+
+/**
+ * G2 glasses home tile — globe icon, top-center on display.
  */
 export const browseSplash = createSplash({
   tiles: 1,
   tileLayout: 'vertical',
   tilePositions: TILE_PRESETS.topCenter1,
   canvasSize: { w: 200, h: 200 },
-  minTimeMs: 1500,
-  maxTimeMs: 5000,
-  menuText: '\n\n' + ' '.repeat(48) + 'LOADING...',
+  minTimeMs: 0,
+  maxTimeMs: 0,
+  menuText: '',
   render: renderBrowseSplash,
 })

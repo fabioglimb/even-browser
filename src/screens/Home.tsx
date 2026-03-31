@@ -18,7 +18,7 @@ export function Home() {
     navigate('/browse')
   }
 
-  useDrawerHeader({ title: 'EvenBrowser' })
+  useDrawerHeader({ title: 'ER Browser' })
 
   return (
     <div className="px-3 pt-4 pb-8">
