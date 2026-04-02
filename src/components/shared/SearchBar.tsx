@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Input, Button, Badge } from 'even-toolkit/web'
 import { IcSearch } from 'even-toolkit/web/icons/svg-icons'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface SearchBarProps {
   onSearch: (query: string) => void
@@ -12,6 +13,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ onSearch, onNext, onPrev, totalMatches, currentMatch, onClose }: SearchBarProps) {
+  const { t } = useTranslation()
   const [input, setInput] = useState('')
 
   const handleChange = (value: string) => {
@@ -31,7 +33,7 @@ export function SearchBar({ onSearch, onNext, onPrev, totalMatches, currentMatch
         type="text"
         value={input}
         onChange={(e) => handleChange(e.target.value)}
-        placeholder="Search in page..."
+        placeholder={t('search.placeholder')}
         className="flex-1"
         autoFocus
       />
@@ -49,7 +51,7 @@ export function SearchBar({ onSearch, onNext, onPrev, totalMatches, currentMatch
         </div>
       )}
       <Button variant="ghost" size="sm" onClick={onClose} type="button">
-        <span className="text-[13px] tracking-[-0.13px]">Done</span>
+        <span className="text-[13px] tracking-[-0.13px]">{t('search.done')}</span>
       </Button>
     </form>
   )

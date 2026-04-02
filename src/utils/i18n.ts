@@ -46,6 +46,49 @@ const translations: Record<string, Record<AppLanguage, string>> = {
   'settings.about': { en: 'About', it: 'Info', es: 'Acerca de', fr: 'A propos', de: 'Info', pt: 'Sobre', ja: '情報', zh: '关于', ko: '정보' },
   'settings.aboutText': { en: 'Web browser for Even Realities G2 smart glasses', it: 'Browser web per occhiali smart Even Realities G2', es: 'Navegador web para gafas inteligentes Even Realities G2', fr: 'Navigateur web pour lunettes Even Realities G2', de: 'Webbrowser fur Even Realities G2 Smartbrille', pt: 'Navegador web para oculos inteligentes Even Realities G2', ja: 'Even Realities G2スマートグラス用ウェブブラウザ', zh: 'Even Realities G2智能眼镜网页浏览器', ko: 'Even Realities G2 스마트 글래스용 웹 브라우저' },
 
+  // ── Page View (direct mode) ──
+  'page.directOpened': { en: 'Site opened in a new tab.', it: 'Sito aperto in una nuova scheda.', es: 'Sitio abierto en una nueva pestaña.', fr: 'Site ouvert dans un nouvel onglet.', de: 'Seite in neuem Tab geöffnet.', pt: 'Site aberto em uma nova aba.', ja: '新しいタブでサイトを開きました。', zh: '已在新标签页中打开网站。', ko: '새 탭에서 사이트가 열렸습니다.' },
+  'page.directHint': { en: 'Login or interact there, then come back and disable direct mode to read the content.', it: 'Accedi o interagisci lì, poi torna indietro e disattiva la modalità diretta per leggere il contenuto.', es: 'Inicia sesión o interactúa allí, luego vuelve y desactiva el modo directo para leer el contenido.', fr: 'Connectez-vous ou interagissez là-bas, puis revenez et désactivez le mode direct pour lire le contenu.', de: 'Melden Sie sich dort an, dann kommen Sie zurück und deaktivieren Sie den Direktmodus, um den Inhalt zu lesen.', pt: 'Faça login ou interaja lá, depois volte e desative o modo direto para ler o conteúdo.', ja: 'そちらでログインまたは操作し、戻ってダイレクトモードを無効にしてコンテンツを読んでください。', zh: '在那里登录或交互，然后返回并禁用直接模式以阅读内容。', ko: '그곳에서 로그인하거나 상호작용한 후 돌아와서 직접 모드를 비활성화하여 콘텐츠를 읽으세요.' },
+  'page.openAgain': { en: 'Open again', it: 'Apri di nuovo', es: 'Abrir de nuevo', fr: 'Rouvrir', de: 'Erneut öffnen', pt: 'Abrir novamente', ja: '再度開く', zh: '再次打开', ko: '다시 열기' },
+  'page.reloadAsText': { en: 'Reload as text', it: 'Ricarica come testo', es: 'Recargar como texto', fr: 'Recharger en texte', de: 'Als Text neu laden', pt: 'Recarregar como texto', ja: 'テキストとして再読み込み', zh: '以文本重新加载', ko: '텍스트로 다시 로드' },
+  'page.browse': { en: 'Browse', it: 'Naviga', es: 'Navegar', fr: 'Naviguer', de: 'Durchsuchen', pt: 'Navegar', ja: 'ブラウズ', zh: '浏览', ko: '탐색' },
+
+  // ── Settings (additional) ──
+  'settings.fontSize': { en: 'Font Size', it: 'Dimensione testo', es: 'Tamaño de fuente', fr: 'Taille de police', de: 'Schriftgröße', pt: 'Tamanho da fonte', ja: 'フォントサイズ', zh: '字体大小', ko: '글꼴 크기' },
+  'settings.fontSizeSmallDesc': { en: 'More text per line (56 chars)', it: 'Più testo per riga (56 car.)', es: 'Más texto por línea (56 car.)', fr: 'Plus de texte par ligne (56 car.)', de: 'Mehr Text pro Zeile (56 Zeichen)', pt: 'Mais texto por linha (56 car.)', ja: '1行あたりのテキスト増加（56文字）', zh: '每行更多文字（56字符）', ko: '줄당 더 많은 텍스트 (56자)' },
+  'settings.fontSizeMediumDesc': { en: 'Default text density (46 chars)', it: 'Densità testo predefinita (46 car.)', es: 'Densidad de texto predeterminada (46 car.)', fr: 'Densité de texte par défaut (46 car.)', de: 'Standard-Textdichte (46 Zeichen)', pt: 'Densidade de texto padrão (46 car.)', ja: 'デフォルトのテキスト密度（46文字）', zh: '默认文字密度（46字符）', ko: '기본 텍스트 밀도 (46자)' },
+  'settings.fontSizeLargeDesc': { en: 'Less text per line (36 chars)', it: 'Meno testo per riga (36 car.)', es: 'Menos texto por línea (36 car.)', fr: 'Moins de texte par ligne (36 car.)', de: 'Weniger Text pro Zeile (36 Zeichen)', pt: 'Menos texto por linha (36 car.)', ja: '1行あたりのテキスト減少（36文字）', zh: '每行更少文字（36字符）', ko: '줄당 더 적은 텍스트 (36자)' },
+  'settings.fontSmall': { en: 'Small', it: 'Piccolo', es: 'Pequeño', fr: 'Petit', de: 'Klein', pt: 'Pequeno', ja: '小', zh: '小', ko: '작게' },
+  'settings.fontMedium': { en: 'Medium', it: 'Medio', es: 'Mediano', fr: 'Moyen', de: 'Mittel', pt: 'Médio', ja: '中', zh: '中', ko: '보통' },
+  'settings.fontLarge': { en: 'Large', it: 'Grande', es: 'Grande', fr: 'Grand', de: 'Groß', pt: 'Grande', ja: '大', zh: '大', ko: '크게' },
+  'settings.onlyPageMode': { en: 'Only applies in page mode', it: 'Si applica solo in modalità pagina', es: 'Solo aplica en modo página', fr: 'S\'applique uniquement en mode page', de: 'Gilt nur im Seitenmodus', pt: 'Aplica-se apenas no modo página', ja: 'ページモードのみ適用', zh: '仅适用于翻页模式', ko: '페이지 모드에서만 적용' },
+  'settings.linesPerPageDesc': { en: '{n} lines per page', it: '{n} righe per pagina', es: '{n} líneas por página', fr: '{n} lignes par page', de: '{n} Zeilen pro Seite', pt: '{n} linhas por página', ja: '1ページ{n}行', zh: '每页{n}行', ko: '페이지당 {n}줄' },
+  'settings.languageDesc': { en: 'App interface language', it: 'Lingua dell\'interfaccia', es: 'Idioma de la interfaz', fr: 'Langue de l\'interface', de: 'Sprache der Oberfläche', pt: 'Idioma da interface', ja: 'アプリの表示言語', zh: '应用界面语言', ko: '앱 인터페이스 언어' },
+  'settings.clearHistoryDesc': { en: 'Remove all browsing history', it: 'Rimuovi tutta la cronologia', es: 'Eliminar todo el historial', fr: 'Supprimer tout l\'historique', de: 'Gesamten Verlauf löschen', pt: 'Remover todo o histórico', ja: 'すべての閲覧履歴を削除', zh: '删除所有浏览记录', ko: '모든 검색 기록 삭제' },
+  'settings.cancel': { en: 'Cancel', it: 'Annulla', es: 'Cancelar', fr: 'Annuler', de: 'Abbrechen', pt: 'Cancelar', ja: 'キャンセル', zh: '取消', ko: '취소' },
+  'settings.confirm': { en: 'Confirm', it: 'Conferma', es: 'Confirmar', fr: 'Confirmer', de: 'Bestätigen', pt: 'Confirmar', ja: '確認', zh: '确认', ko: '확인' },
+  'settings.clear': { en: 'Clear', it: 'Cancella', es: 'Borrar', fr: 'Effacer', de: 'Löschen', pt: 'Limpar', ja: '消去', zh: '清除', ko: '삭제' },
+
+  // ── Auth Dialog ──
+  'auth.loginTo': { en: 'Login to {domain}', it: 'Accedi a {domain}', es: 'Iniciar sesión en {domain}', fr: 'Connexion à {domain}', de: 'Anmelden bei {domain}', pt: 'Entrar em {domain}', ja: '{domain}にログイン', zh: '登录{domain}', ko: '{domain}에 로그인' },
+  'auth.username': { en: 'Username', it: 'Nome utente', es: 'Usuario', fr: 'Nom d\'utilisateur', de: 'Benutzername', pt: 'Usuário', ja: 'ユーザー名', zh: '用户名', ko: '사용자명' },
+  'auth.password': { en: 'Password', it: 'Password', es: 'Contraseña', fr: 'Mot de passe', de: 'Passwort', pt: 'Senha', ja: 'パスワード', zh: '密码', ko: '비밀번호' },
+  'auth.remember': { en: 'Remember credentials', it: 'Ricorda credenziali', es: 'Recordar credenciales', fr: 'Mémoriser les identifiants', de: 'Anmeldedaten merken', pt: 'Lembrar credenciais', ja: '認証情報を記憶', zh: '记住凭据', ko: '자격 증명 기억' },
+  'auth.login': { en: 'Login', it: 'Accedi', es: 'Entrar', fr: 'Connexion', de: 'Anmelden', pt: 'Entrar', ja: 'ログイン', zh: '登录', ko: '로그인' },
+  'auth.cancel': { en: 'Cancel', it: 'Annulla', es: 'Cancelar', fr: 'Annuler', de: 'Abbrechen', pt: 'Cancelar', ja: 'キャンセル', zh: '取消', ko: '취소' },
+
+  // ── Page Actions ──
+  'actions.directMode': { en: 'Direct mode', it: 'Modalità diretta', es: 'Modo directo', fr: 'Mode direct', de: 'Direktmodus', pt: 'Modo direto', ja: 'ダイレクトモード', zh: '直接模式', ko: '직접 모드' },
+  'actions.directModeDesc': { en: 'Load actual site for login', it: 'Carica il sito reale per accedere', es: 'Cargar sitio real para iniciar sesión', fr: 'Charger le site réel pour se connecter', de: 'Echte Seite zum Anmelden laden', pt: 'Carregar site real para login', ja: '実際のサイトを読み込んでログイン', zh: '加载实际网站以登录', ko: '로그인을 위해 실제 사이트 로드' },
+  'actions.addBookmark': { en: 'Add bookmark', it: 'Aggiungi segnalibro', es: 'Añadir marcador', fr: 'Ajouter un signet', de: 'Lesezeichen hinzufügen', pt: 'Adicionar favorito', ja: 'ブックマークに追加', zh: '添加书签', ko: '북마크 추가' },
+  'actions.removeBookmark': { en: 'Remove bookmark', it: 'Rimuovi segnalibro', es: 'Eliminar marcador', fr: 'Supprimer le signet', de: 'Lesezeichen entfernen', pt: 'Remover favorito', ja: 'ブックマークを削除', zh: '移除书签', ko: '북마크 제거' },
+  'actions.copyUrl': { en: 'Copy URL', it: 'Copia URL', es: 'Copiar URL', fr: 'Copier l\'URL', de: 'URL kopieren', pt: 'Copiar URL', ja: 'URLをコピー', zh: '复制URL', ko: 'URL 복사' },
+  'actions.copyPageText': { en: 'Copy page text', it: 'Copia testo pagina', es: 'Copiar texto de la página', fr: 'Copier le texte', de: 'Seitentext kopieren', pt: 'Copiar texto da página', ja: 'ページテキストをコピー', zh: '复制页面文字', ko: '페이지 텍스트 복사' },
+
+  // ── Search Bar ──
+  'search.placeholder': { en: 'Search in page...', it: 'Cerca nella pagina...', es: 'Buscar en la página...', fr: 'Rechercher dans la page...', de: 'Auf der Seite suchen...', pt: 'Buscar na página...', ja: 'ページ内検索...', zh: '在页面中搜索...', ko: '페이지에서 검색...' },
+  'search.done': { en: 'Done', it: 'Fatto', es: 'Hecho', fr: 'Terminé', de: 'Fertig', pt: 'Pronto', ja: '完了', zh: '完成', ko: '완료' },
+
   // ── Glass screens ──
   'glass.waiting': { en: 'Enter a URL on your phone', it: 'Inserisci un URL sul telefono', es: 'Ingresa una URL en tu telefono', fr: 'Entrez une URL sur votre telephone', de: 'Geben Sie eine URL auf Ihrem Handy ein', pt: 'Digite uma URL no seu celular', ja: '電話でURLを入力してください', zh: '在手机上输入URL', ko: '휴대폰에서 URL을 입력하세요' },
   'glass.waitingSub': { en: 'to start browsing.', it: 'per iniziare a navigare.', es: 'para empezar a navegar.', fr: 'pour commencer.', de: 'um zu starten.', pt: 'para comecar a navegar.', ja: '閲覧を開始します。', zh: '开始浏览。', ko: '탐색을 시작합니다.' },
@@ -64,8 +107,14 @@ const translations: Record<string, Record<AppLanguage, string>> = {
 
 export type { AppLanguage }
 
-export function t(key: string, lang: AppLanguage): string {
+export function t(key: string, lang: AppLanguage, params?: Record<string, string | number>): string {
   const entry = translations[key]
   if (!entry) return key
-  return entry[lang] ?? entry.en ?? key
+  let result = entry[lang] ?? entry.en ?? key
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      result = result.replace(`{${k}}`, String(v))
+    }
+  }
+  return result
 }

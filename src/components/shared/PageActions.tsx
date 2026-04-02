@@ -1,4 +1,5 @@
 import { BottomSheet, ListItem, Toggle } from 'even-toolkit/web'
+import { useTranslation } from '../../hooks/useTranslation'
 import type { FontSize } from '../../types'
 
 interface PageActionsProps {
@@ -26,6 +27,7 @@ export function PageActions({
   directMode,
   onToggleDirectMode,
 }: PageActionsProps) {
+  const { t } = useTranslation()
   const handleCopyUrl = async () => {
     try { await navigator.clipboard.writeText(url) } catch { /* */ }
     onClose()
@@ -40,16 +42,16 @@ export function PageActions({
     <BottomSheet open={open} onClose={onClose}>
       <div className="pb-2">
         <ListItem
-          title="Direct mode"
-          subtitle="Load actual site for login"
+          title={t('actions.directMode')}
+          subtitle={t('actions.directModeDesc')}
           trailing={<Toggle checked={directMode} onChange={onToggleDirectMode} />}
         />
         <ListItem
-          title={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
+          title={bookmarked ? t('actions.removeBookmark') : t('actions.addBookmark')}
           onPress={() => { onToggleBookmark(); onClose() }}
         />
-        <ListItem title="Copy URL" onPress={handleCopyUrl} />
-        <ListItem title="Copy page text" onPress={handleCopyText} />
+        <ListItem title={t('actions.copyUrl')} onPress={handleCopyUrl} />
+        <ListItem title={t('actions.copyPageText')} onPress={handleCopyText} />
       </div>
     </BottomSheet>
   )

@@ -7,7 +7,7 @@ export function useTranslation() {
   const lang = settings.language
 
   const t = useCallback(
-    (key: string) => translate(key, lang),
+    (key: string, params?: Record<string, string | number>) => translate(key, lang, params),
     [lang],
   )
 

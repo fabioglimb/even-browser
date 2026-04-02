@@ -80,10 +80,10 @@ export function PageView() {
 
   // Determine header title based on state
   const headerTitle = loading
-    ? (t('page.loading') || "Loading...")
+    ? t('page.loading')
     : (error && !currentPage)
       ? t('page.failedToLoad')
-      : currentPage?.title ?? 'Browse'
+      : currentPage?.title ?? t('page.browse')
 
   useDrawerHeader({
     title: headerTitle,
@@ -185,16 +185,16 @@ export function PageView() {
       {directMode ? (
         <div className="flex flex-col items-center justify-center gap-3 py-12">
           <p className="text-[15px] tracking-[-0.15px] text-text text-center">
-            Site opened in a new tab.
+            {t('page.directOpened')}
           </p>
           <p className="text-[13px] tracking-[-0.13px] text-text-dim text-center">
-            Login or interact there, then come back and disable direct mode to read the content.
+            {t('page.directHint')}
           </p>
           <Button variant="highlight" size="sm" onClick={() => window.open(currentPage.url, '_blank')}>
-            Open again
+            {t('page.openAgain')}
           </Button>
           <Button variant="default" size="sm" onClick={() => { setDirectMode(false); retry() }}>
-            Reload as text
+            {t('page.reloadAsText')}
           </Button>
         </div>
       ) : (
