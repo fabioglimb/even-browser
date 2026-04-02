@@ -12,7 +12,7 @@ interface PageActionsProps {
   fontSize: FontSize
   onFontSizeChange: (size: FontSize) => void
   directMode: boolean
-  onToggleDirectMode: () => void
+  onToggleDirectMode: (checked: boolean) => void
 }
 
 export function PageActions({
@@ -44,7 +44,7 @@ export function PageActions({
         <ListItem
           title={t('actions.directMode')}
           subtitle={t('actions.directModeDesc')}
-          trailing={<Toggle checked={directMode} onChange={onToggleDirectMode} />}
+          trailing={<Toggle checked={directMode} onChange={(checked) => { onToggleDirectMode(checked); onClose() }} />}
         />
         <ListItem
           title={bookmarked ? t('actions.removeBookmark') : t('actions.addBookmark')}

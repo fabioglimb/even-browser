@@ -39,11 +39,15 @@ export function PageView() {
   const [showActions, setShowActions] = useState(false)
   const [directMode, setDirectMode] = useState(false)
 
-  const toggleDirectMode = () => {
-    if (!directMode && currentPage) {
+  const setDirectModeEnabled = (enabled: boolean) => {
+    if (!currentPage) return
+    if (enabled) {
       window.open(currentPage.url, '_blank')
+      setDirectMode(true)
+      return
     }
-    setDirectMode(d => !d)
+    setDirectMode(false)
+    retry()
   }
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -178,74 +182,82 @@ export function PageView() {
         fontSize={settings.fontSize}
         onFontSizeChange={(size: FontSize) => setSettings({ ...settings, fontSize: size })}
         directMode={directMode}
-        onToggleDirectMode={toggleDirectMode}
+        onToggleDirectMode={setDirectModeEnabled}
       />
 
-      {/* Direct mode — open actual site in new tab */}
-      {directMode ? (
-        <div className="flex flex-col items-center justify-center gap-3 py-12">
-          <p className="text-[15px] tracking-[-0.15px] text-text text-center">
-            {t('page.directOpened')}
-          </p>
-          <p className="text-[13px] tracking-[-0.13px] text-text-dim text-center">
-            {t('page.directHint')}
-          </p>
-          <Button variant="highlight" size="sm" onClick={() => window.open(currentPage.url, '_blank')}>
-            {t('page.openAgain')}
-          </Button>
-          <Button variant="default" size="sm" onClick={() => { setDirectMode(false); retry() }}>
-            {t('page.reloadAsText')}
-          </Button>
-        </div>
-      ) : (
-        <>
-          {/* URL and badges */}
-          <div>
-            <div className="text-[11px] tracking-[-0.11px] text-text-muted truncate font-mono">
-              {displayUrl(currentPage.url)}
-            </div>
-            <div className="flex gap-2 mt-2">
-              <Badge>{currentPage.links.length} {t('page.links')}</Badge>
-              <Badge>{currentPage.lines.length} {t('page.lines')}</Badge>
+      {directMode && (
+        <Card className="border border-accent bg-accent-alpha">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Badge variant="accent">{t('actions.directMode')}</Badge>
+              </div>
+              <p className="text-[15px] tracking-[-0.15px] text-text">
+                {t('page.directOpened')}
+              </p>
+              <p className="text-[13px] tracking-[-0.13px] text-text-dim mt-1">
+                {t('page.directHint')}
+              </p>
             </div>
           </div>
-
-          {/* Page content preview */}
-          <Card padding="sm" className="space-y-1 max-h-64 overflow-y-auto" ref={contentRef}>
-            {currentPage.blocks.slice(0, 50).map((block, i) => {
-              if (block.type === 'separator') {
-                return <Divider key={i} />
-              }
-              if (block.type === 'heading') {
-                return <h3 key={i} className="text-[13px] tracking-[-0.13px] font-normal text-text mt-2">{block.text}</h3>
-              }
-
-              const lineIdx = currentPage.lines.findIndex(l => l.text === block.text)
-              const isHighlighted = lineIdx >= 0 && lineIdx === currentMatchLine
-
-              return (
-                <p
-                  key={i}
-                  data-line-index={lineIdx >= 0 ? lineIdx : undefined}
-                  className={`text-[11px] tracking-[-0.11px] text-text-dim leading-relaxed ${isHighlighted ? 'bg-accent-warning rounded-[4px] px-1' : ''}`}
-                >
-                  {renderTextWithLinks(block.text, currentPage.links, handleNavigate)}
-                </p>
-              )
-            })}
-          </Card>
-
-          {/* Links section */}
-          {currentPage.links.length > 0 && (
-            <div>
-              <SectionHeader title={`${t('page.linksTitle')} (${currentPage.links.length})`} />
-              <Card padding="none" className="max-h-64 overflow-y-auto">
-                <LinkList links={currentPage.links} onNavigate={handleNavigate} />
-              </Card>
-            </div>
-          )}
-        </>
+          <div className="flex gap-2 mt-3">
+            <Button variant="highlight" size="sm" onClick={() => window.open(currentPage.url, '_blank')}>
+              {t('page.openAgain')}
+            </Button>
+            <Button variant="default" size="sm" onClick={() => setDirectModeEnabled(false)}>
+              {t('page.reloadAsText')}
+            </Button>
+          </div>
+        </Card>
       )}
+
+      <>
+        {/* URL and badges */}
+        <div>
+          <div className="text-[11px] tracking-[-0.11px] text-text-muted truncate font-mono">
+            {displayUrl(currentPage.url)}
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Badge>{currentPage.links.length} {t('page.links')}</Badge>
+            <Badge>{currentPage.lines.length} {t('page.lines')}</Badge>
+          </div>
+        </div>
+
+        {/* Page content preview */}
+        <Card padding="sm" className="space-y-1 max-h-64 overflow-y-auto" ref={contentRef}>
+          {currentPage.blocks.slice(0, 50).map((block, i) => {
+            if (block.type === 'separator') {
+              return <Divider key={i} />
+            }
+            if (block.type === 'heading') {
+              return <h3 key={i} className="text-[13px] tracking-[-0.13px] font-normal text-text mt-2">{block.text}</h3>
+            }
+
+            const lineIdx = currentPage.lines.findIndex(l => l.text === block.text)
+            const isHighlighted = lineIdx >= 0 && lineIdx === currentMatchLine
+
+            return (
+              <p
+                key={i}
+                data-line-index={lineIdx >= 0 ? lineIdx : undefined}
+                className={`text-[11px] tracking-[-0.11px] text-text-dim leading-relaxed ${isHighlighted ? 'bg-accent-warning rounded-[4px] px-1' : ''}`}
+              >
+                {renderTextWithLinks(block.text, currentPage.links, handleNavigate)}
+              </p>
+            )
+          })}
+        </Card>
+
+        {/* Links section */}
+        {currentPage.links.length > 0 && (
+          <div>
+            <SectionHeader title={`${t('page.linksTitle')} (${currentPage.links.length})`} />
+            <Card padding="none" className="max-h-64 overflow-y-auto">
+              <LinkList links={currentPage.links} onNavigate={handleNavigate} />
+            </Card>
+          </div>
+        )}
+      </>
 
       {/* Error banner (if error but page still shown) */}
       {error && (
