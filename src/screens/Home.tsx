@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { useBrowse } from '../hooks/useBrowse'
 import { useTranslation } from '../hooks/useTranslation'
@@ -11,7 +12,11 @@ export function Home() {
   const navigate = useNavigate()
   const { navigateToUrl, loading, bookmarks, removeBookmark } = useBrowse()
   const { t } = useTranslation()
-  const recentUrls = loadRecentUrls()
+  const [recentUrls, setRecentUrls] = useState<string[]>([])
+
+  useEffect(() => {
+    loadRecentUrls().then(setRecentUrls)
+  }, [])
 
   const handleNavigate = (url: string) => {
     navigateToUrl(url)

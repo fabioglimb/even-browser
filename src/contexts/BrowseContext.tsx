@@ -51,6 +51,7 @@ type BrowseAction =
   | { type: 'SET_CREDENTIALS'; domain: string; username: string; password: string }
   | { type: 'REMOVE_CREDENTIALS'; domain: string }
   | { type: 'SET_COOKIES'; domain: string; cookies: string }
+  | { type: 'HYDRATE'; bookmarks: Bookmark[]; settings: BrowseSettings; credentials: StoredCredentials }
 
 // ── Context value ──
 
@@ -87,10 +88,21 @@ const BrowseContext = createContext<BrowseContextValue | null>(null)
 
 const MAX_HISTORY = 20
 
+const DEFAULT_SETTINGS: BrowseSettings = {
+  linesPerPage: 7,
+  showPageNumbers: true,
+  readMode: 'scroll',
+  language: 'en',
+  fontSize: 'medium' as FontSize,
+}
+
 // ── Reducer ──
 
 function browseReducer(state: BrowseState, action: BrowseAction): BrowseState {
   switch (action.type) {
+    case 'HYDRATE':
+      return { ...state, bookmarks: action.bookmarks, settings: action.settings, credentials: action.credentials }
+
     case 'NAVIGATE_START':
       return { ...state, loading: true, error: null, loadingUrl: action.url }
 
@@ -222,19 +234,28 @@ function browseReducer(state: BrowseState, action: BrowseAction): BrowseState {
 // ── Provider ──
 
 export function BrowseProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(browseReducer, null, () => ({
+  const [state, dispatch] = useReducer(browseReducer, {
     currentPage: null,
     loading: false,
     error: null,
     loadingUrl: null,
     historyStack: [],
     historyIndex: -1,
-    bookmarks: loadBookmarks(),
-    settings: loadSettings(),
-    credentials: loadCredentials(),
+    bookmarks: [],
+    settings: DEFAULT_SETTINGS,
+    credentials: {},
     cookieJar: {} as Record<string, string>,
     authRequired: null,
-  }))
+  })
+
+  // Hydrate from async storage on mount
+  useEffect(() => {
+    Promise.all([loadBookmarks(), loadSettings(), loadCredentials()]).then(
+      ([bookmarks, settings, credentials]) => {
+        dispatch({ type: 'HYDRATE', bookmarks, settings, credentials })
+      },
+    )
+  }, [])
 
   // Abort controller for cancellable fetches
   const abortRef = useRef<AbortController | null>(null)

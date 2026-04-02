@@ -3,7 +3,7 @@
  */
 
 import type { Bookmark, BrowseSettings, FontSize } from '../types'
-import { storageGetSync, storageSet, storageRemove } from 'even-toolkit/storage'
+import { storageGet, storageSet, storageRemove } from 'even-toolkit/storage'
 
 const BOOKMARKS_KEY = 'even-browser:bookmarks'
 const HISTORY_KEY = 'even-browser:history'
@@ -19,8 +19,8 @@ export const ALL_STORAGE_KEYS = [
 
 // ── Bookmarks ──
 
-export function loadBookmarks(): Bookmark[] {
-  return storageGetSync<Bookmark[]>(BOOKMARKS_KEY, [])
+export async function loadBookmarks(): Promise<Bookmark[]> {
+  return storageGet<Bookmark[]>(BOOKMARKS_KEY, [])
 }
 
 export function saveBookmarks(bookmarks: Bookmark[]): void {
@@ -29,16 +29,16 @@ export function saveBookmarks(bookmarks: Bookmark[]): void {
 
 // ── Recent History (URL strings only, for the home screen) ──
 
-export function loadRecentUrls(): string[] {
-  return storageGetSync<string[]>(HISTORY_KEY, [])
+export async function loadRecentUrls(): Promise<string[]> {
+  return storageGet<string[]>(HISTORY_KEY, [])
 }
 
 export function saveRecentUrls(urls: string[]): void {
   storageSet(HISTORY_KEY, urls.slice(0, 50))
 }
 
-export function addRecentUrl(url: string): void {
-  const urls = loadRecentUrls().filter(u => u !== url)
+export async function addRecentUrl(url: string): Promise<void> {
+  const urls = (await loadRecentUrls()).filter(u => u !== url)
   urls.unshift(url)
   saveRecentUrls(urls.slice(0, 50))
 }
@@ -59,22 +59,22 @@ export interface StoredCredentials {
   [domain: string]: { username: string; password: string }
 }
 
-export function loadCredentials(): StoredCredentials {
-  return storageGetSync<StoredCredentials>(CREDENTIALS_KEY, {})
+export async function loadCredentials(): Promise<StoredCredentials> {
+  return storageGet<StoredCredentials>(CREDENTIALS_KEY, {})
 }
 
 export function saveCredentials(creds: StoredCredentials): void {
   storageSet(CREDENTIALS_KEY, creds)
 }
 
-export function removeCredentials(domain: string): void {
-  const creds = loadCredentials()
+export async function removeCredentials(domain: string): Promise<void> {
+  const creds = await loadCredentials()
   delete creds[domain]
   saveCredentials(creds)
 }
 
-export function loadSettings(): BrowseSettings {
-  const stored = storageGetSync<Partial<BrowseSettings> | null>(SETTINGS_KEY, null)
+export async function loadSettings(): Promise<BrowseSettings> {
+  const stored = await storageGet<Partial<BrowseSettings> | null>(SETTINGS_KEY, null)
   if (stored) {
     return { ...DEFAULT_SETTINGS, ...stored }
   }
