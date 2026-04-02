@@ -22,6 +22,7 @@ export function BrowseGlasses() {
     loadingUrl,
     canGoBack,
     settings,
+    bookmarks,
     navigateToUrl,
     goBack,
     retry,
@@ -48,6 +49,7 @@ export function BrowseGlasses() {
     linesPerPage: settings.linesPerPage,
     showPageNumbers: settings.showPageNumbers,
     language: settings.language,
+    bookmarks: bookmarks.map(b => ({ title: b.title, url: b.url })),
   }
   snapshotRef.current = snapshot
 

@@ -18,17 +18,48 @@ import { resolveUrl } from './url-utils'
 
 const DEFAULT_CHARS_PER_LINE = 46
 
+export interface FetchOptions {
+  authorization?: string
+  cookies?: string
+}
+
+export interface FetchResult {
+  pageData: PageData
+  status: number
+  setCookies: string[]
+}
+
 /** Fetch and parse a URL into PageData */
-export async function fetchAndParse(url: string, charsPerLine = DEFAULT_CHARS_PER_LINE): Promise<PageData> {
+export async function fetchAndParse(
+  url: string,
+  charsPerLine = DEFAULT_CHARS_PER_LINE,
+  options?: FetchOptions,
+): Promise<FetchResult> {
   const proxyBase = import.meta.env.VITE_EHPK
     ? 'https://even-browser.vercel.app/__browse_proxy'
     : '/__browse_proxy';
-  const res = await fetch(`${proxyBase}?url=${encodeURIComponent(url)}`)
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+
+  const headers: Record<string, string> = {}
+  if (options?.authorization) headers['Authorization'] = options.authorization
+  if (options?.cookies) headers['X-Forward-Cookies'] = options.cookies
+
+  const res = await fetch(`${proxyBase}?url=${encodeURIComponent(url)}`, { headers })
+
+  const status = parseInt(res.headers.get('x-upstream-status') || String(res.status), 10)
+  const setCookiesRaw = res.headers.get('x-set-cookies')
+  const setCookies: string[] = setCookiesRaw ? JSON.parse(setCookiesRaw) : []
+
+  if (status === 401 || status === 403) {
+    throw Object.assign(new Error(`Authentication required (${status})`), { status })
   }
+
+  if (!res.ok && status >= 400) {
+    throw new Error(`HTTP ${status}: ${res.statusText}`)
+  }
+
   const html = await res.text()
-  return parseHtml(html, url, charsPerLine)
+  const pageData = parseHtml(html, url, charsPerLine)
+  return { pageData, status, setCookies }
 }
 
 /** Parse raw HTML string into PageData */

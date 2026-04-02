@@ -58,6 +58,8 @@ const translations: Record<string, Record<AppLanguage, string>> = {
   'glass.retry': { en: 'Retry', it: 'Riprova', es: 'Reintentar', fr: 'Reessayer', de: 'Erneut', pt: 'Tentar', ja: '再試行', zh: '重试', ko: '재시도' },
   'glass.noLinks': { en: 'No links found on this page.', it: 'Nessun link trovato.', es: 'No se encontraron enlaces.', fr: 'Aucun lien trouve.', de: 'Keine Links gefunden.', pt: 'Nenhum link encontrado.', ja: 'リンクなし', zh: '未找到链接', ko: '링크 없음' },
   'glass.failedToLoad': { en: 'Failed to load page:', it: 'Impossibile caricare:', es: 'Error al cargar:', fr: 'Echec du chargement:', de: 'Laden fehlgeschlagen:', pt: 'Falha ao carregar:', ja: '読み込み失敗:', zh: '加载失败:', ko: '로드 실패:' },
+  'glass.find': { en: 'Find', it: 'Cerca', es: 'Buscar', fr: 'Chercher', de: 'Suchen', pt: 'Buscar', ja: '検索', zh: '查找', ko: '찾기' },
+  'glass.findOnPhone': { en: 'Use phone to search', it: 'Usa il telefono per cercare', es: 'Usa el telefono para buscar', fr: 'Utilisez le telephone', de: 'Handy zum Suchen nutzen', pt: 'Use o celular para buscar', ja: '電話で検索してください', zh: '请用手机搜索', ko: '휴대폰으로 검색하세요' },
 }
 
 export type { AppLanguage }

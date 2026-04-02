@@ -11,6 +11,7 @@ export interface BrowseSnapshot {
   linesPerPage: number
   showPageNumbers: boolean
   language: AppLanguage
+  bookmarks: { title: string; url: string }[]
 }
 
 export interface BrowseActions {

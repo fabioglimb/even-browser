@@ -17,12 +17,13 @@ export const browseMode = createModeEncoder({
   buttons: 0,
   read: 100,
   links: 200,
+  find: 300,
 })
 
 // ── Button definitions ──
 
 export function getPageButtons(lang: AppLanguage, canGoBack: boolean): string[] {
-  const btns = [t('glass.read', lang), t('glass.links', lang)]
+  const btns = [t('glass.read', lang), t('glass.links', lang), t('glass.find', lang)]
   if (canGoBack) btns.push(t('glass.back', lang))
   return btns
 }
@@ -88,10 +89,17 @@ function pageViewDisplay(page: PageData, snapshot: BrowseSnapshot, nav: import('
   const buttons = getPageButtons(lang, snapshot.canGoBack)
   const btnIdx = clampIndex(nav.highlightedIndex, buttons.length)
 
-  const activeLabel = mode === 'read' ? t('glass.read', lang) : mode === 'links' ? t('glass.links', lang) : null
+  const activeLabel = mode === 'read' ? t('glass.read', lang) : mode === 'links' ? t('glass.links', lang) : mode === 'find' ? t('glass.find', lang) : null
   const actionBar = buildActionBar(buttons, btnIdx, activeLabel, snapshot.flashPhase)
 
   const lines = [...glassHeader(truncate(page.title, 20), actionBar)]
+
+  if (mode === 'find') {
+    lines.push(line(''))
+    lines.push(line(t('glass.findOnPhone', lang), 'meta'))
+    lines.push(line(''))
+    return { lines }
+  }
 
   if (mode === 'links') {
     const linkOffset = browseMode.getOffset(nav.highlightedIndex)
@@ -261,6 +269,9 @@ export const pageViewScreen: GlassScreen<BrowseSnapshot, BrowseActions> = {
         if (selected === t('glass.links', lang)) {
           return { ...nav, highlightedIndex: browseMode.encode('links') }
         }
+        if (selected === t('glass.find', lang)) {
+          return { ...nav, highlightedIndex: browseMode.encode('find') }
+        }
         if (selected === t('glass.back', lang)) {
           ctx.goBack()
           return { ...nav, highlightedIndex: 0 }
@@ -296,6 +307,15 @@ export const pageViewScreen: GlassScreen<BrowseSnapshot, BrowseActions> = {
       if (action.type === 'SELECT_HIGHLIGHTED' || action.type === 'GO_BACK') {
         const readIdx = buttons.indexOf(t('glass.read', lang))
         return { ...nav, highlightedIndex: readIdx >= 0 ? readIdx : 0 }
+      }
+      return nav
+    }
+
+    // ── Find mode ──
+    if (mode === 'find') {
+      if (action.type === 'SELECT_HIGHLIGHTED' || action.type === 'GO_BACK') {
+        const findIdx = buttons.indexOf(t('glass.find', lang))
+        return { ...nav, highlightedIndex: findIdx >= 0 ? findIdx : 0 }
       }
       return nav
     }

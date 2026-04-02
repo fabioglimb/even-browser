@@ -45,6 +45,13 @@ export interface Bookmark {
   addedAt: number
 }
 
+export interface SiteCredentials {
+  username: string
+  password: string
+}
+
+export type FontSize = 'small' | 'medium' | 'large'
+
 export type ReadMode = 'scroll' | 'page'
 export type AppLanguage = 'en' | 'it' | 'es' | 'fr' | 'de' | 'pt' | 'ja' | 'zh' | 'ko'
 
@@ -65,4 +72,5 @@ export interface BrowseSettings {
   showPageNumbers: boolean
   readMode: ReadMode
   language: AppLanguage
+  fontSize: FontSize
 }

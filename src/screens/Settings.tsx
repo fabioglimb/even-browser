@@ -1,7 +1,7 @@
 import { useBrowse } from '../hooks/useBrowse'
 import { useTranslation } from '../hooks/useTranslation'
 import { Button, SegmentedControl, SettingsGroup, ListItem, Toggle, useDrawerHeader } from 'even-toolkit/web'
-import { APP_LANGUAGES, type AppLanguage } from '../types'
+import { APP_LANGUAGES, type AppLanguage, type FontSize } from '../types'
 
 export function Settings() {
   const { settings, setSettings, bookmarks, clearHistory } = useBrowse()
@@ -30,6 +30,25 @@ export function Settings() {
 
       {/* Display Settings */}
       <SettingsGroup label={t('settings.display')}>
+        {/* Font Size */}
+        <div className="px-4 py-4 space-y-2">
+          <span className="text-[15px] tracking-[-0.15px] text-text">Font Size</span>
+          <SegmentedControl
+            size="small"
+            options={[
+              { value: 'small', label: 'Small' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'large', label: 'Large' },
+            ]}
+            value={settings.fontSize}
+            onValueChange={(v) => setSettings({ ...settings, fontSize: v as FontSize })}
+            className="w-full"
+          />
+          <p className="text-[11px] tracking-[-0.11px] text-text-muted">
+            {settings.fontSize === 'small' ? 'More text per line (56 chars)' : settings.fontSize === 'large' ? 'Less text per line (36 chars)' : 'Default text density (46 chars)'}
+          </p>
+        </div>
+
         {/* Read Mode */}
         <div className="px-4 py-4 space-y-2">
           <span className="text-[15px] tracking-[-0.15px] text-text">{t('settings.readMode')}</span>

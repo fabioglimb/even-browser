@@ -2,40 +2,39 @@
  * localStorage persistence for bookmarks, history, and settings.
  */
 
-import type { Bookmark, BrowseSettings } from '../types'
+import type { Bookmark, BrowseSettings, FontSize } from '../types'
+import { storageGetSync, storageSet, storageRemove } from 'even-toolkit/storage'
 
 const BOOKMARKS_KEY = 'even-browser:bookmarks'
 const HISTORY_KEY = 'even-browser:history'
 const SETTINGS_KEY = 'even-browser:settings'
+const CREDENTIALS_KEY = 'even-browser:credentials'
+
+export const ALL_STORAGE_KEYS = [
+  'even-browser:bookmarks',
+  'even-browser:history',
+  'even-browser:settings',
+  'even-browser:credentials',
+]
 
 // ── Bookmarks ──
 
 export function loadBookmarks(): Bookmark[] {
-  try {
-    const raw = localStorage.getItem(BOOKMARKS_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
+  return storageGetSync<Bookmark[]>(BOOKMARKS_KEY, [])
 }
 
 export function saveBookmarks(bookmarks: Bookmark[]): void {
-  localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks))
+  storageSet(BOOKMARKS_KEY, bookmarks)
 }
 
 // ── Recent History (URL strings only, for the home screen) ──
 
 export function loadRecentUrls(): string[] {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
+  return storageGetSync<string[]>(HISTORY_KEY, [])
 }
 
 export function saveRecentUrls(urls: string[]): void {
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(urls.slice(0, 50)))
+  storageSet(HISTORY_KEY, urls.slice(0, 50))
 }
 
 export function addRecentUrl(url: string): void {
@@ -51,17 +50,37 @@ const DEFAULT_SETTINGS: BrowseSettings = {
   showPageNumbers: true,
   readMode: 'scroll',
   language: 'en',
+  fontSize: 'medium' as FontSize,
+}
+
+// ── Credentials ──
+
+export interface StoredCredentials {
+  [domain: string]: { username: string; password: string }
+}
+
+export function loadCredentials(): StoredCredentials {
+  return storageGetSync<StoredCredentials>(CREDENTIALS_KEY, {})
+}
+
+export function saveCredentials(creds: StoredCredentials): void {
+  storageSet(CREDENTIALS_KEY, creds)
+}
+
+export function removeCredentials(domain: string): void {
+  const creds = loadCredentials()
+  delete creds[domain]
+  saveCredentials(creds)
 }
 
 export function loadSettings(): BrowseSettings {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY)
-    return raw ? { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } : DEFAULT_SETTINGS
-  } catch {
-    return DEFAULT_SETTINGS
+  const stored = storageGetSync<Partial<BrowseSettings> | null>(SETTINGS_KEY, null)
+  if (stored) {
+    return { ...DEFAULT_SETTINGS, ...stored }
   }
+  return DEFAULT_SETTINGS
 }
 
 export function saveSettings(settings: BrowseSettings): void {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
+  storageSet(SETTINGS_KEY, settings)
 }

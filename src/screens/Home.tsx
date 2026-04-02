@@ -18,15 +18,15 @@ export function Home() {
     navigate('/browse')
   }
 
-  useDrawerHeader({ title: 'ER Browser' })
+  useDrawerHeader({
+    title: (<div style={{ width: 'calc(100% + 48px)', marginRight: '-48px' }} className="overflow-visible whitespace-normal"><UrlBar onNavigate={handleNavigate} loading={loading} /></div>) as unknown as string,
+  })
 
   return (
-    <div className="px-3 pt-4 pb-8">
-      {/* URL Bar */}
-      <UrlBar onNavigate={handleNavigate} loading={loading} />
+    <div className="px-3 pt-2 pb-8">
 
       {/* Quick Links */}
-      <div className="mt-3">
+      <div>
         <SectionHeader title={t('home.quickLinks')} />
         <QuickLinks onNavigate={handleNavigate} />
       </div>

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Input, Button } from 'even-toolkit/web'
+import { IcGuideGo } from 'even-toolkit/web/icons/svg-icons'
 import { normalizeUrl } from '../../lib/url-utils'
 import { useTranslation } from '../../hooks/useTranslation'
 
@@ -33,8 +34,8 @@ export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <div className="relative flex-1">
+    <form onSubmit={handleSubmit} className="flex items-center gap-1.5 flex-1 min-w-0">
+      <div className="relative flex-1 min-w-0">
         <Input
           type="text"
           value={input}
@@ -43,7 +44,7 @@ export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck={false}
-          className="pr-16 font-mono"
+          className="pr-12 font-mono text-[13px] tracking-[-0.13px]"
         />
         <button
           type="button"
@@ -53,8 +54,8 @@ export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
           {t('url.paste')}
         </button>
       </div>
-      <Button type="submit" variant="highlight" size="sm" disabled={loading || !input.trim()}>
-        {loading ? t('url.loading') : t('url.go')}
+      <Button type="submit" variant="highlight" size="icon" disabled={loading || !input.trim()}>
+        <IcGuideGo width={16} height={16} />
       </Button>
     </form>
   )
