@@ -42,7 +42,7 @@ export function PageView() {
   const setDirectModeEnabled = (enabled: boolean) => {
     if (!currentPage) return
     if (enabled) {
-      window.open(currentPage.url, '_blank')
+      setShowSearch(false)
       setDirectMode(true)
       return
     }
@@ -100,9 +100,11 @@ export function PageView() {
     ),
     right: currentPage && !loading ? (
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" onClick={() => setShowSearch(s => !s)}>
-          <IcSearch className="w-5 h-5" />
-        </Button>
+        {!directMode && (
+          <Button variant="ghost" size="icon" onClick={() => setShowSearch(s => !s)}>
+            <IcSearch className="w-5 h-5" />
+          </Button>
+        )}
         <Button variant="ghost" size="icon" onClick={() => setShowActions(true)}>
           <IcMore className="w-5 h-5" />
         </Button>
@@ -148,7 +150,7 @@ export function PageView() {
   const pageText = currentPage.blocks.map(b => b.text).filter(Boolean).join('\n')
 
   return (
-    <div className="px-3 pt-4 pb-8 space-y-4">
+    <div className="h-full min-h-0 flex flex-col">
       {/* Auth Dialog */}
       {authRequired && (
         <AuthDialog
@@ -156,18 +158,6 @@ export function PageView() {
           domain={authRequired.domain}
           onSubmit={submitAuth}
           onCancel={dismissAuth}
-        />
-      )}
-
-      {/* Search Bar */}
-      {showSearch && (
-        <SearchBar
-          onSearch={search}
-          onNext={nextMatch}
-          onPrev={prevMatch}
-          totalMatches={totalMatches}
-          currentMatch={currentMatch}
-          onClose={() => { setShowSearch(false); search('') }}
         />
       )}
 
@@ -185,86 +175,85 @@ export function PageView() {
         onToggleDirectMode={setDirectModeEnabled}
       />
 
-      {directMode && (
-        <Card className="border border-accent bg-accent-alpha">
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-1.5">
-                <Badge variant="accent">{t('actions.directMode')}</Badge>
-              </div>
-              <p className="text-[15px] tracking-[-0.15px] text-text">
-                {t('page.directOpened')}
-              </p>
-              <p className="text-[13px] tracking-[-0.13px] text-text-dim mt-1">
-                {t('page.directHint')}
-              </p>
+      {directMode ? (
+        <div className="flex-1 min-h-0 bg-white">
+          <iframe
+            key={currentPage.url}
+            src={currentPage.url}
+            title={currentPage.title || currentPage.url}
+            className="block h-full w-full border-0 bg-white"
+            sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+      ) : (
+        <div className="px-3 pt-4 pb-4 flex flex-col gap-4">
+          {/* Search Bar */}
+          {showSearch && (
+            <SearchBar
+              onSearch={search}
+              onNext={nextMatch}
+              onPrev={prevMatch}
+              totalMatches={totalMatches}
+              currentMatch={currentMatch}
+              onClose={() => { setShowSearch(false); search('') }}
+            />
+          )}
+
+          {/* URL and badges */}
+          <div>
+            <div className="text-[11px] tracking-[-0.11px] text-text-muted truncate font-mono">
+              {displayUrl(currentPage.url)}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Badge>{currentPage.links.length} {t('page.links')}</Badge>
+              <Badge>{currentPage.lines.length} {t('page.lines')}</Badge>
             </div>
           </div>
-          <div className="flex gap-2 mt-3">
-            <Button variant="highlight" size="sm" onClick={() => window.open(currentPage.url, '_blank')}>
-              {t('page.openAgain')}
-            </Button>
-            <Button variant="default" size="sm" onClick={() => setDirectModeEnabled(false)}>
-              {t('page.reloadAsText')}
-            </Button>
-          </div>
-        </Card>
-      )}
 
-      <>
-        {/* URL and badges */}
-        <div>
-          <div className="text-[11px] tracking-[-0.11px] text-text-muted truncate font-mono">
-            {displayUrl(currentPage.url)}
-          </div>
-          <div className="flex gap-2 mt-2">
-            <Badge>{currentPage.links.length} {t('page.links')}</Badge>
-            <Badge>{currentPage.lines.length} {t('page.lines')}</Badge>
-          </div>
-        </div>
+          {/* Page content preview */}
+          <Card padding="sm" className="space-y-1 max-h-64 overflow-y-auto" ref={contentRef}>
+            {currentPage.blocks.slice(0, 50).map((block, i) => {
+              if (block.type === 'separator') {
+                return <Divider key={i} />
+              }
+              if (block.type === 'heading') {
+                return <h3 key={i} className="text-[13px] tracking-[-0.13px] font-normal text-text mt-2">{block.text}</h3>
+              }
 
-        {/* Page content preview */}
-        <Card padding="sm" className="space-y-1 max-h-64 overflow-y-auto" ref={contentRef}>
-          {currentPage.blocks.slice(0, 50).map((block, i) => {
-            if (block.type === 'separator') {
-              return <Divider key={i} />
-            }
-            if (block.type === 'heading') {
-              return <h3 key={i} className="text-[13px] tracking-[-0.13px] font-normal text-text mt-2">{block.text}</h3>
-            }
+              const lineIdx = currentPage.lines.findIndex(l => l.text === block.text)
+              const isHighlighted = lineIdx >= 0 && lineIdx === currentMatchLine
 
-            const lineIdx = currentPage.lines.findIndex(l => l.text === block.text)
-            const isHighlighted = lineIdx >= 0 && lineIdx === currentMatchLine
+              return (
+                <p
+                  key={i}
+                  data-line-index={lineIdx >= 0 ? lineIdx : undefined}
+                  className={`text-[11px] tracking-[-0.11px] text-text-dim leading-relaxed ${isHighlighted ? 'bg-accent-warning rounded-[4px] px-1' : ''}`}
+                >
+                  {renderTextWithLinks(block.text, currentPage.links, handleNavigate)}
+                </p>
+              )
+            })}
+          </Card>
 
-            return (
-              <p
-                key={i}
-                data-line-index={lineIdx >= 0 ? lineIdx : undefined}
-                className={`text-[11px] tracking-[-0.11px] text-text-dim leading-relaxed ${isHighlighted ? 'bg-accent-warning rounded-[4px] px-1' : ''}`}
-              >
-                {renderTextWithLinks(block.text, currentPage.links, handleNavigate)}
-              </p>
-            )
-          })}
-        </Card>
+          {/* Links section */}
+          {currentPage.links.length > 0 && (
+            <div>
+              <SectionHeader title={`${t('page.linksTitle')} (${currentPage.links.length})`} />
+              <Card padding="none" className="max-h-64 overflow-y-auto">
+                <LinkList links={currentPage.links} onNavigate={handleNavigate} />
+              </Card>
+            </div>
+          )}
 
-        {/* Links section */}
-        {currentPage.links.length > 0 && (
-          <div>
-            <SectionHeader title={`${t('page.linksTitle')} (${currentPage.links.length})`} />
-            <Card padding="none" className="max-h-64 overflow-y-auto">
-              <LinkList links={currentPage.links} onNavigate={handleNavigate} />
+          {/* Error banner (if error but page still shown) */}
+          {error && (
+            <Card className="bg-negative-alpha border-negative">
+              <p className="text-[13px] tracking-[-0.13px] text-negative">{error}</p>
+              <Button onClick={retry} size="sm" className="mt-2">{t('page.retry')}</Button>
             </Card>
-          </div>
-        )}
-      </>
-
-      {/* Error banner (if error but page still shown) */}
-      {error && (
-        <Card className="bg-negative-alpha border-negative">
-          <p className="text-[13px] tracking-[-0.13px] text-negative">{error}</p>
-          <Button onClick={retry} size="sm" className="mt-2">{t('page.retry')}</Button>
-        </Card>
+          )}
+        </div>
       )}
     </div>
   )

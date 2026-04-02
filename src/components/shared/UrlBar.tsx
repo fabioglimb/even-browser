@@ -34,7 +34,7 @@ export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-1.5 flex-1 min-w-0">
+    <form onSubmit={handleSubmit} className="flex w-full items-center gap-1.5 min-w-0">
       <div className="relative flex-1 min-w-0">
         <Input
           type="text"
@@ -54,7 +54,7 @@ export function UrlBar({ onNavigate, loading, initialUrl = '' }: UrlBarProps) {
           {t('url.paste')}
         </button>
       </div>
-      <Button type="submit" variant="highlight" size="icon" disabled={loading || !input.trim()}>
+      <Button type="submit" variant="highlight" size="icon" disabled={loading || !input.trim()} className="shrink-0">
         <IcGuideGo width={16} height={16} />
       </Button>
     </form>

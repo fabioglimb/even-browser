@@ -24,7 +24,7 @@ export function Home() {
   }
 
   useDrawerHeader({
-    title: (<div style={{ width: 'calc(100% + 48px)', marginRight: '-48px' }} className="overflow-visible whitespace-normal"><UrlBar onNavigate={handleNavigate} loading={loading} /></div>) as unknown as string,
+    title: <UrlBar onNavigate={handleNavigate} loading={loading} />,
   })
 
   return (
