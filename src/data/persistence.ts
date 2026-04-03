@@ -1,9 +1,9 @@
 /**
- * localStorage persistence for bookmarks, history, and settings.
+ * Bridge-backed persistence for bookmarks, history, and settings.
  */
 
 import type { Bookmark, BrowseSettings, FontSize } from '../types'
-import { storageGet, storageSet, storageRemove } from 'even-toolkit/storage'
+import { storageGet, storageSet, storageRemove } from './bridge-storage'
 
 const BOOKMARKS_KEY = 'even-browser:bookmarks'
 const HISTORY_KEY = 'even-browser:history'
