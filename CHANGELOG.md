@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.7
+
+Released: 2026-04-03
+
+No breaking changes.
+
+### Changed
+
+- aligned the app with `even-toolkit` 1.6.3 for centered shared nav headers and bridge-only storage
+- startup persistence now waits for hydration before saving bookmarks, settings, and credentials back to storage
+
+### Notes
+
+- direct mode and the embedded browser flow remain compatible with the current 0.1.x release line
+
 ## 0.1.6
 
 Released: 2026-04-02

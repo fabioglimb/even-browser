@@ -247,12 +247,14 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
     cookieJar: {} as Record<string, string>,
     authRequired: null,
   })
+  const [hydrated, setHydrated] = useState(false)
 
   // Hydrate from async storage on mount
   useEffect(() => {
     Promise.all([loadBookmarks(), loadSettings(), loadCredentials()]).then(
       ([bookmarks, settings, credentials]) => {
         dispatch({ type: 'HYDRATE', bookmarks, settings, credentials })
+        setHydrated(true)
       },
     )
   }, [])
@@ -261,16 +263,19 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
   const abortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
+    if (!hydrated) return
     saveBookmarks(state.bookmarks)
-  }, [state.bookmarks])
+  }, [state.bookmarks, hydrated])
 
   useEffect(() => {
+    if (!hydrated) return
     saveSettings(state.settings)
-  }, [state.settings])
+  }, [state.settings, hydrated])
 
   useEffect(() => {
+    if (!hydrated) return
     saveCredentials(state.credentials)
-  }, [state.credentials])
+  }, [state.credentials, hydrated])
 
   const getCharsPerLine = useCallback(() => {
     return FONT_SIZE_CHARS[state.settings.fontSize] ?? 46
