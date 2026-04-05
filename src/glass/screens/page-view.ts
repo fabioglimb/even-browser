@@ -87,10 +87,10 @@ function pageViewDisplay(page: PageData, snapshot: BrowseSnapshot, nav: import('
   const mode = browseMode.getMode(nav.highlightedIndex)
   const lang = snapshot.language
   const buttons = getPageButtons(lang, snapshot.canGoBack)
-  const btnIdx = clampIndex(nav.highlightedIndex, buttons.length)
+  const selectedButtonIndex = mode === 'buttons' ? clampIndex(nav.highlightedIndex, buttons.length) : -1
 
   const activeLabel = mode === 'read' ? t('glass.read', lang) : mode === 'links' ? t('glass.links', lang) : mode === 'find' ? t('glass.find', lang) : null
-  const actionBar = buildActionBar(buttons, btnIdx, activeLabel, snapshot.flashPhase)
+  const actionBar = buildActionBar(buttons, selectedButtonIndex, activeLabel, snapshot.flashPhase)
 
   const lines = [...glassHeader(truncate(page.title, 20), actionBar)]
 

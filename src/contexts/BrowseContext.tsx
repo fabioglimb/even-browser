@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, useCallback, useRef, type ReactNode } from 'react'
+import { createContext, useContext, useReducer, useEffect, useCallback, useRef, useState, type ReactNode } from 'react'
 import type { PageData, Bookmark, BrowseSettings, HistoryEntry, FontSize } from '../types'
 import {
   loadBookmarks, saveBookmarks, loadSettings, saveSettings, addRecentUrl,

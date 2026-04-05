@@ -12,6 +12,7 @@
  */
 
 import type { PageData, PageBlock, PageLink, PageContentLine } from '../types'
+import { Readability } from '@mozilla/readability'
 import { cleanForG2 } from './text-clean'
 import { wordWrap } from 'even-toolkit/paginate-text'
 import { resolveUrl } from './url-utils'
@@ -35,9 +36,7 @@ export async function fetchAndParse(
   charsPerLine = DEFAULT_CHARS_PER_LINE,
   options?: FetchOptions,
 ): Promise<FetchResult> {
-  const proxyBase = import.meta.env.VITE_EHPK
-    ? 'https://even-browser.vercel.app/__browse_proxy'
-    : '/__browse_proxy';
+  const proxyBase = 'https://even-browser.vercel.app/__browse_proxy';
 
   const headers: Record<string, string> = {}
   if (options?.authorization) headers['Authorization'] = options.authorization
@@ -67,35 +66,137 @@ export function parseHtml(html: string, baseUrl: string, charsPerLine = DEFAULT_
   const doc = new DOMParser().parseFromString(html, 'text/html')
   const title = cleanForG2(doc.title || extractDomainSimple(baseUrl))
 
+  const readablePage = parseReadableHtml(html, baseUrl, charsPerLine, title)
+  if (readablePage && countMeaningfulLines(readablePage.lines) >= 3) {
+    return readablePage
+  }
+
+  const structuredPage = parseStructuredDocument(doc, baseUrl, charsPerLine, title)
+  if (countMeaningfulLines(structuredPage.lines) >= 3) {
+    return structuredPage
+  }
+
+  return buildPlainTextPageData(doc.body?.textContent ?? '', baseUrl, charsPerLine, title)
+}
+
+function parseReadableHtml(
+  html: string,
+  baseUrl: string,
+  charsPerLine: number,
+  fallbackTitle: string,
+): PageData | null {
+  try {
+    const readabilityDoc = new DOMParser().parseFromString(html, 'text/html')
+    const article = new Readability(readabilityDoc).parse()
+    if (!article) return null
+
+    const title = cleanForG2(article.title || fallbackTitle)
+
+    if (article.content?.trim()) {
+      const articleDoc = new DOMParser().parseFromString(`<article>${article.content}</article>`, 'text/html')
+      const blocks: PageBlock[] = []
+      const links: PageLink[] = []
+      const root = articleDoc.querySelector('article') || articleDoc.body
+      if (root) walkNode(root, blocks, links, baseUrl)
+
+      const pageData = buildPageData(baseUrl, title, blocks, links, charsPerLine)
+      if (countMeaningfulLines(pageData.lines) >= 3) {
+        return pageData
+      }
+    }
+
+    if (article.textContent?.trim()) {
+      return buildPlainTextPageData(article.textContent, baseUrl, charsPerLine, title)
+    }
+  } catch {
+    // Fall back to the structured DOM walker below.
+  }
+
+  return null
+}
+
+function parseStructuredDocument(
+  doc: Document,
+  baseUrl: string,
+  charsPerLine: number,
+  title: string,
+): PageData {
   const blocks: PageBlock[] = []
   const links: PageLink[] = []
 
-  // Try <article>, <main>, then <body>
   const root = doc.querySelector('article') || doc.querySelector('main') || doc.body
   if (root) {
     walkNode(root, blocks, links, baseUrl)
   }
 
-  // If we got very little content, try full body
-  if (blocks.filter(b => b.type !== 'separator').length < 3) {
+  if (blocks.filter(block => block.type !== 'separator').length < 3 && doc.body) {
     blocks.length = 0
     links.length = 0
     walkNode(doc.body, blocks, links, baseUrl)
   }
 
-  // Deduplicate consecutive separators
+  return buildPageData(baseUrl, title, blocks, links, charsPerLine)
+}
+
+function buildPlainTextPageData(
+  rawText: string,
+  baseUrl: string,
+  charsPerLine: number,
+  title: string,
+): PageData {
+  const text = rawText
+    .replace(/\r/g, '')
+    .split('\n')
+    .map(line => cleanForG2(line))
+    .map(line => line.trim())
+    .filter(Boolean)
+
+  const paragraphs: string[] = []
+  let current = ''
+
+  for (const line of text) {
+    if (line.length < 2) continue
+    if (!current) {
+      current = line
+      continue
+    }
+
+    if ((current.length + line.length + 1) <= 240) {
+      current = `${current} ${line}`
+    } else {
+      paragraphs.push(current)
+      current = line
+    }
+  }
+
+  if (current) paragraphs.push(current)
+
+  const blocks: PageBlock[] = paragraphs
+    .slice(0, 80)
+    .map((paragraph) => ({ type: 'paragraph' as const, text: paragraph }))
+
+  return buildPageData(baseUrl, title, blocks, [], charsPerLine)
+}
+
+function buildPageData(
+  baseUrl: string,
+  title: string,
+  blocks: PageBlock[],
+  links: PageLink[],
+  charsPerLine: number,
+): PageData {
   const deduped = dedupeSeparators(blocks)
-
-  // Word-wrap blocks into display lines and map links
   const { lines, linkLineMap } = buildDisplayLines(deduped, links, charsPerLine)
-
-  // Update link line indices
   const mappedLinks = links.map((link, i) => ({
     ...link,
     lineIndex: linkLineMap.get(i) ?? 0,
   }))
 
   return { url: baseUrl, title, blocks: deduped, links: mappedLinks, lines }
+}
+
+function countMeaningfulLines(lines: PageContentLine[]): number {
+  return lines.filter((line) => line.text.trim() && line.text !== '---').length
 }
 
 // Elements to skip entirely
