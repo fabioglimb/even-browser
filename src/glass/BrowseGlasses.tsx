@@ -1,18 +1,14 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { useGlasses } from 'even-toolkit/useGlasses'
-import { useFlashPhase } from 'even-toolkit/useFlashPhase'
-import { createScreenMapper, getHomeTiles } from 'even-toolkit/glass-router'
+import { createScreenMapper } from 'even-toolkit/glass-router'
 import { useBrowseContext } from '../contexts/BrowseContext'
-import { browseSplash } from './splash'
 import { toDisplayData, onGlassAction, type BrowseSnapshot } from './selectors'
 import type { BrowseActions } from './shared'
 
 const deriveScreen = createScreenMapper([
   { pattern: '/browse', screen: 'page-view' },
 ], 'waiting')
-
-const homeTiles = getHomeTiles(browseSplash)
 
 export function BrowseGlasses() {
   const {
@@ -31,8 +27,6 @@ export function BrowseGlasses() {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const isPageView = deriveScreen(location.pathname) === 'page-view'
-  const flashPhase = useFlashPhase(isPageView)
 
   const snapshotRef = useMemo(() => ({
     current: null as BrowseSnapshot | null,
@@ -44,7 +38,7 @@ export function BrowseGlasses() {
     error,
     loadingUrl,
     canGoBack,
-    flashPhase,
+    flashPhase: false,
     readMode: settings.readMode,
     linesPerPage: settings.linesPerPage,
     showPageNumbers: settings.showPageNumbers,
@@ -78,9 +72,7 @@ export function BrowseGlasses() {
     onGlassAction: handleGlassAction,
     deriveScreen,
     appName: 'ER BROWSER',
-    splash: browseSplash,
     getPageMode: (screen) => screen === 'waiting' ? 'home' : 'text',
-    homeImageTiles: homeTiles,
   })
 
   return null
