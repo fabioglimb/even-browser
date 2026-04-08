@@ -50,6 +50,8 @@ export const waitingScreen: GlassScreen<BrowseSnapshot, BrowseActions> = {
 
     return {
       lines: [
+        line('◆  E R   B R O W S E R  ◆', 'normal'),
+        line('', 'separator'),
         line(t('glass.waiting', lang), 'meta'),
         line(t('glass.waitingSub', lang), 'meta'),
         line(''),
