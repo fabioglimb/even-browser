@@ -1,5 +1,7 @@
 # EvenBrowser
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/f3tch)
+
 A hands-free web browser for **Even Realities G2 glasses**. Enter a URL on your phone, read web content on your glasses — follow links, navigate back, bookmark pages, all hands-free.
 
 **Try it now** — scan with Even Hub:
@@ -200,6 +202,12 @@ DisplayData → useGlasses → G2 glasses
     ↓
 User taps a link on glasses → push to history → fetch new page → repeat
 ```
+
+## Support
+
+If you find this useful, consider supporting the project:
+
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/f3tch)
 
 ## License
 

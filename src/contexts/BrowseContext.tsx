@@ -6,6 +6,7 @@ import {
   type StoredCredentials,
 } from '../data/persistence'
 import { fetchAndParse } from '../lib/html-parser'
+import { storageGet, storageSet } from 'even-toolkit/storage'
 import { extractDomain } from '../lib/url-utils'
 
 // ── Font size to chars per line mapping ──
@@ -26,6 +27,7 @@ interface BrowseState {
   historyStack: HistoryEntry[]
   historyIndex: number
   bookmarks: Bookmark[]
+  favoriteUrls: string[]
   settings: BrowseSettings
   credentials: StoredCredentials
   cookieJar: Record<string, string>
@@ -51,7 +53,8 @@ type BrowseAction =
   | { type: 'SET_CREDENTIALS'; domain: string; username: string; password: string }
   | { type: 'REMOVE_CREDENTIALS'; domain: string }
   | { type: 'SET_COOKIES'; domain: string; cookies: string }
-  | { type: 'HYDRATE'; bookmarks: Bookmark[]; settings: BrowseSettings; credentials: StoredCredentials }
+  | { type: 'HYDRATE'; bookmarks: Bookmark[]; favoriteUrls: string[]; settings: BrowseSettings; credentials: StoredCredentials }
+  | { type: 'TOGGLE_FAVORITE_BOOKMARK'; url: string }
 
 // ── Context value ──
 
@@ -76,6 +79,8 @@ interface BrowseContextValue {
   addBookmark: (url: string, title: string) => void
   removeBookmark: (url: string) => void
   isBookmarked: (url: string) => boolean
+  favoriteUrls: string[]
+  toggleFavoriteBookmark: (url: string) => void
   setSettings: (settings: BrowseSettings) => void
   clearHistory: () => void
   saveScrollOffset: (offset: number) => void
@@ -101,7 +106,11 @@ const DEFAULT_SETTINGS: BrowseSettings = {
 function browseReducer(state: BrowseState, action: BrowseAction): BrowseState {
   switch (action.type) {
     case 'HYDRATE':
-      return { ...state, bookmarks: action.bookmarks, settings: action.settings, credentials: action.credentials }
+      return { ...state, bookmarks: action.bookmarks, favoriteUrls: action.favoriteUrls, settings: action.settings, credentials: action.credentials }
+    case 'TOGGLE_FAVORITE_BOOKMARK': {
+      const isFav = state.favoriteUrls.includes(action.url)
+      return { ...state, favoriteUrls: isFav ? state.favoriteUrls.filter(u => u !== action.url) : [...state.favoriteUrls, action.url] }
+    }
 
     case 'NAVIGATE_START':
       return { ...state, loading: true, error: null, loadingUrl: action.url }
@@ -242,6 +251,7 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
     historyStack: [],
     historyIndex: -1,
     bookmarks: [],
+    favoriteUrls: [],
     settings: DEFAULT_SETTINGS,
     credentials: {},
     cookieJar: {} as Record<string, string>,
@@ -251,9 +261,9 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
 
   // Hydrate from async storage on mount
   useEffect(() => {
-    Promise.all([loadBookmarks(), loadSettings(), loadCredentials()]).then(
-      ([bookmarks, settings, credentials]) => {
-        dispatch({ type: 'HYDRATE', bookmarks, settings, credentials })
+    Promise.all([loadBookmarks(), loadSettings(), loadCredentials(), storageGet<string[]>('browser-favorites', [])]).then(
+      ([bookmarks, settings, credentials, favs]) => {
+        dispatch({ type: 'HYDRATE', bookmarks, favoriteUrls: favs ?? [], settings, credentials })
         setHydrated(true)
       },
     )
@@ -271,6 +281,11 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
     if (!hydrated) return
     saveSettings(state.settings)
   }, [state.settings, hydrated])
+
+  useEffect(() => {
+    if (!hydrated) return
+    storageSet('browser-favorites', state.favoriteUrls)
+  }, [state.favoriteUrls, hydrated])
 
   useEffect(() => {
     if (!hydrated) return
@@ -399,6 +414,8 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
     },
     removeBookmark: (url) => dispatch({ type: 'REMOVE_BOOKMARK', url }),
     isBookmarked: (url) => state.bookmarks.some(b => b.url === url),
+    favoriteUrls: state.favoriteUrls,
+    toggleFavoriteBookmark: (url) => dispatch({ type: 'TOGGLE_FAVORITE_BOOKMARK', url }),
     setSettings: (settings) => dispatch({ type: 'SET_SETTINGS', settings }),
     clearHistory: () => dispatch({ type: 'CLEAR_HISTORY' }),
     saveScrollOffset: (offset) => dispatch({ type: 'SAVE_SCROLL_OFFSET', offset }),

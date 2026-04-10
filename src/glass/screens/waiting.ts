@@ -21,7 +21,9 @@ export const waitingScreen: GlassScreen<BrowseSnapshot, BrowseActions> = {
 
     if (mode === 'bookmarks' && hasBookmarks) {
       const offset = waitingMode.getOffset(nav.highlightedIndex)
-      const total = snapshot.bookmarks.length
+      const favSet = new Set(snapshot.favoriteUrls)
+      const sorted = [...snapshot.bookmarks].sort((a, b) => (favSet.has(a.url) ? 0 : 1) - (favSet.has(b.url) ? 0 : 1))
+      const total = sorted.length
       const CONTENT_SLOTS = DEFAULT_CONTENT_SLOTS
       const start = Math.max(0, Math.min(offset - 2, total - CONTENT_SLOTS))
       const end = Math.min(start + CONTENT_SLOTS, total)
@@ -34,7 +36,8 @@ export const waitingScreen: GlassScreen<BrowseSnapshot, BrowseActions> = {
       const contentLines = []
       for (let i = start; i < end; i++) {
         const prefix = i === offset ? '\u25B8 ' : '  '
-        const text = `${prefix}${truncate(snapshot.bookmarks[i].title, 40)}`
+        const star = favSet.has(sorted[i].url) ? '★ ' : ''
+        const text = `${prefix}${star}${truncate(sorted[i].title, star ? 38 : 40)}`
         contentLines.push(line(text, 'normal', i === offset))
       }
 

@@ -1,4 +1,4 @@
-const DIRECT_PROXY = 'https://even-browser.vercel.app/__browse_proxy'
+const DIRECT_PROXY = 'https://even-proxy.fabio-glimb.workers.dev/browse'
 
 const KNOWN_TOP_LEVEL_DIRECT_MODE_HOSTS = [
   'youtube.com',

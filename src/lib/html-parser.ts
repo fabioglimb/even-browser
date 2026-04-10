@@ -36,7 +36,7 @@ export async function fetchAndParse(
   charsPerLine = DEFAULT_CHARS_PER_LINE,
   options?: FetchOptions,
 ): Promise<FetchResult> {
-  const proxyBase = 'https://even-browser.vercel.app/__browse_proxy';
+  const proxyBase = 'https://even-proxy.fabio-glimb.workers.dev/browse';
 
   const headers: Record<string, string> = {}
   if (options?.authorization) headers['Authorization'] = options.authorization

@@ -8,6 +8,6 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    dedupe: ["react", "react-dom", "react-router", "@evenrealities/even_hub_sdk", "@jappyjan/even-better-sdk", "upng-js"],
+    dedupe: ["react", "react-dom", "react-router", "@evenrealities/even_hub_sdk", "upng-js"],
   },
 })

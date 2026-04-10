@@ -10,7 +10,7 @@ import { SectionHeader, ListItem, useDrawerHeader } from 'even-toolkit/web'
 
 export function Home() {
   const navigate = useNavigate()
-  const { navigateToUrl, loading, bookmarks, removeBookmark } = useBrowse()
+  const { navigateToUrl, loading, bookmarks, removeBookmark, favoriteUrls, toggleFavoriteBookmark } = useBrowse()
   const { t } = useTranslation()
   const [recentUrls, setRecentUrls] = useState<string[]>([])
 
@@ -46,6 +46,11 @@ export function Home() {
                 key={b.url}
                 title={b.title}
                 subtitle={b.domain}
+                leading={
+                  <button type="button" onClick={(e) => { e.stopPropagation(); toggleFavoriteBookmark(b.url); }} className="text-[17px] cursor-pointer">
+                    {favoriteUrls.includes(b.url) ? '★' : '☆'}
+                  </button>
+                }
                 onPress={() => handleNavigate(b.url)}
                 onDelete={() => removeBookmark(b.url)}
               />

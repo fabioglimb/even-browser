@@ -12,6 +12,7 @@ export interface BrowseSnapshot {
   showPageNumbers: boolean
   language: AppLanguage
   bookmarks: { title: string; url: string }[]
+  favoriteUrls: string[]
 }
 
 export interface BrowseActions {
