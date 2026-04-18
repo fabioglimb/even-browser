@@ -1,0 +1,39 @@
+import { DrawerShell } from 'even-toolkit/web';
+import type { SideDrawerItem } from 'even-toolkit/web';
+import { IcMenuHome, IcEditSettings } from 'even-toolkit/web/icons/svg-icons';
+
+const iconProps = { width: 18, height: 18, className: 'text-current' };
+
+const MENU_ITEMS: SideDrawerItem[] = [
+  { id: '/', label: 'Home', section: 'Browser', icon: <IcMenuHome {...iconProps} /> },
+];
+
+const BOTTOM_ITEMS: SideDrawerItem[] = [
+  { id: '/settings', label: 'Settings', icon: <IcEditSettings {...iconProps} /> },
+];
+
+function getPageTitle(pathname: string): string {
+  if (pathname === '/') return 'ER Browser';
+  if (pathname === '/browse') return 'Browse';
+  if (pathname === '/settings') return 'Settings';
+  return 'Browser';
+}
+
+function deriveActiveId(pathname: string): string {
+  if (pathname === '/') return '/';
+  if (pathname === '/browse') return '/browse';
+  if (pathname === '/settings') return '/settings';
+  return '/';
+}
+
+export function Shell() {
+  return (
+    <DrawerShell
+      items={MENU_ITEMS}
+      bottomItems={BOTTOM_ITEMS}
+      title="ER Browser"
+      getPageTitle={getPageTitle}
+      deriveActiveId={deriveActiveId}
+    />
+  );
+}
