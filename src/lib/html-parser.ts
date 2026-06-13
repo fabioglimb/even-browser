@@ -78,6 +78,30 @@ export function parseHtml(html: string, baseUrl: string, charsPerLine = DEFAULT_
   return buildPlainTextPageData(doc.body?.textContent ?? '', baseUrl, charsPerLine, title)
 }
 
+/**
+ * Ensure the HTML carries an absolute <base href> pointing at the real page URL.
+ *
+ * DOMParser-created documents inherit the app's own origin as their baseURI
+ * (inside the Even Hub webview that is http://127.0.0.1:<port>). Mozilla
+ * Readability resolves relative links against baseURI, so without this the
+ * extracted links come out as 127.0.0.1/... instead of the real site.
+ */
+function injectBaseHref(html: string, baseUrl: string): string {
+  const existing = html.match(/<base\b[^>]*\bhref\s*=\s*["']([^"']*)["'][^>]*>/i)
+  // A page's own <base href> may itself be relative — resolve it against the real URL.
+  const effectiveBase = existing ? resolveUrl(existing[1], baseUrl) : baseUrl
+  const stripped = html.replace(/<base\b[^>]*>/gi, '')
+  const baseTag = `<base href="${effectiveBase}">`
+
+  if (/<head\b[^>]*>/i.test(stripped)) {
+    return stripped.replace(/<head\b[^>]*>/i, (m) => `${m}${baseTag}`)
+  }
+  if (/<html\b[^>]*>/i.test(stripped)) {
+    return stripped.replace(/<html\b[^>]*>/i, (m) => `${m}<head>${baseTag}</head>`)
+  }
+  return `${baseTag}${stripped}`
+}
+
 function parseReadableHtml(
   html: string,
   baseUrl: string,
@@ -85,7 +109,7 @@ function parseReadableHtml(
   fallbackTitle: string,
 ): PageData | null {
   try {
-    const readabilityDoc = new DOMParser().parseFromString(html, 'text/html')
+    const readabilityDoc = new DOMParser().parseFromString(injectBaseHref(html, baseUrl), 'text/html')
     const article = new Readability(readabilityDoc).parse()
     if (!article) return null
 
