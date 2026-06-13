@@ -14,6 +14,7 @@ const translations: Record<string, Record<AppLanguage, string>> = {
   'url.paste': { en: 'Paste', it: 'Incolla', es: 'Pegar', fr: 'Coller', de: 'Einfugen', pt: 'Colar', ja: '貼付', zh: '粘贴', ko: '붙여넣기' },
   'url.go': { en: 'Go', it: 'Vai', es: 'Ir', fr: 'Aller', de: 'Los', pt: 'Ir', ja: '移動', zh: '前往', ko: '이동' },
   'url.loading': { en: 'Loading...', it: 'Caricamento...', es: 'Cargando...', fr: 'Chargement...', de: 'Laden...', pt: 'Carregando...', ja: '読込中...', zh: '加载中...', ko: '로딩...' },
+  'url.invalid': { en: 'Enter a valid URL', it: 'Inserisci un URL valido', es: 'Ingresa una URL válida', fr: 'Entrez une URL valide', de: 'Geben Sie eine gültige URL ein', pt: 'Digite uma URL válida', ja: '有効なURLを入力してください', zh: '请输入有效的URL', ko: '유효한 URL을 입력하세요' },
 
   // ── Page View ──
   'page.back': { en: 'Back', it: 'Indietro', es: 'Atras', fr: 'Retour', de: 'Zuruck', pt: 'Voltar', ja: '戻る', zh: '返回', ko: '뒤로' },
@@ -58,6 +59,7 @@ const translations: Record<string, Record<AppLanguage, string>> = {
   'page.openLivePage': { en: 'Open live page', it: 'Apri pagina live', es: 'Abrir pagina real', fr: 'Ouvrir la page reelle', de: 'Live-Seite öffnen', pt: 'Abrir pagina real', ja: '実際のページを開く', zh: '打开真实页面', ko: '실제 페이지 열기' },
   'page.reloadAsText': { en: 'Reload as text', it: 'Ricarica come testo', es: 'Recargar como texto', fr: 'Recharger en texte', de: 'Als Text neu laden', pt: 'Recarregar como texto', ja: 'テキストとして再読み込み', zh: '以文本重新加载', ko: '텍스트로 다시 로드' },
   'page.browse': { en: 'Browse', it: 'Naviga', es: 'Navegar', fr: 'Naviguer', de: 'Durchsuchen', pt: 'Navegar', ja: 'ブラウズ', zh: '浏览', ko: '탐색' },
+  'page.loadError': { en: 'Could not load page', it: 'Impossibile caricare la pagina', es: 'No se pudo cargar la página', fr: 'Impossible de charger la page', de: 'Seite konnte nicht geladen werden', pt: 'Não foi possível carregar a página', ja: 'ページを読み込めませんでした', zh: '无法加载页面', ko: '페이지를 로드할 수 없습니다' },
 
   // ── Settings (additional) ──
   'settings.fontSize': { en: 'Font Size', it: 'Dimensione testo', es: 'Tamaño de fuente', fr: 'Taille de police', de: 'Schriftgröße', pt: 'Tamanho da fonte', ja: 'フォントサイズ', zh: '字体大小', ko: '글꼴 크기' },
@@ -82,6 +84,8 @@ const translations: Record<string, Record<AppLanguage, string>> = {
   'auth.remember': { en: 'Remember credentials', it: 'Ricorda credenziali', es: 'Recordar credenciales', fr: 'Mémoriser les identifiants', de: 'Anmeldedaten merken', pt: 'Lembrar credenciais', ja: '認証情報を記憶', zh: '记住凭据', ko: '자격 증명 기억' },
   'auth.login': { en: 'Login', it: 'Accedi', es: 'Entrar', fr: 'Connexion', de: 'Anmelden', pt: 'Entrar', ja: 'ログイン', zh: '登录', ko: '로그인' },
   'auth.cancel': { en: 'Cancel', it: 'Annulla', es: 'Cancelar', fr: 'Annuler', de: 'Abbrechen', pt: 'Cancelar', ja: 'キャンセル', zh: '取消', ko: '취소' },
+  'auth.required': { en: 'Required', it: 'Obbligatorio', es: 'Obligatorio', fr: 'Requis', de: 'Erforderlich', pt: 'Obrigatório', ja: '必須', zh: '必填', ko: '필수' },
+  'auth.invalid': { en: 'Invalid credentials, please try again', it: 'Credenziali non valide, riprova', es: 'Credenciales no válidas, inténtalo de nuevo', fr: 'Identifiants invalides, réessayez', de: 'Ungültige Anmeldedaten, bitte erneut versuchen', pt: 'Credenciais inválidas, tente novamente', ja: '認証情報が無効です。もう一度お試しください', zh: '凭据无效，请重试', ko: '잘못된 자격 증명입니다. 다시 시도하세요' },
 
   // ── Page Actions ──
   'actions.directMode': { en: 'Direct mode', it: 'Modalità diretta', es: 'Modo directo', fr: 'Mode direct', de: 'Direktmodus', pt: 'Modo direto', ja: 'ダイレクトモード', zh: '直接模式', ko: '직접 모드' },

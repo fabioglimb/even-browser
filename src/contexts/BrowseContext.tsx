@@ -32,6 +32,8 @@ interface BrowseState {
   credentials: StoredCredentials
   cookieJar: Record<string, string>
   authRequired: { url: string; domain: string } | null
+  /** True when the most recent auth prompt follows a rejected credential attempt. */
+  authFailed: boolean
 }
 
 // ── Actions ──
@@ -48,7 +50,7 @@ type BrowseAction =
   | { type: 'SET_SETTINGS'; settings: BrowseSettings }
   | { type: 'CLEAR_HISTORY' }
   | { type: 'SAVE_SCROLL_OFFSET'; offset: number }
-  | { type: 'AUTH_REQUIRED'; url: string; domain: string }
+  | { type: 'AUTH_REQUIRED'; url: string; domain: string; failed?: boolean }
   | { type: 'AUTH_DISMISS' }
   | { type: 'SET_CREDENTIALS'; domain: string; username: string; password: string }
   | { type: 'REMOVE_CREDENTIALS'; domain: string }
@@ -70,6 +72,7 @@ interface BrowseContextValue {
   canGoBack: boolean
   canGoForward: boolean
   authRequired: { url: string; domain: string } | null
+  authFailed: boolean
   credentials: StoredCredentials
   navigateToUrl: (url: string) => void
   goBack: () => void
@@ -113,7 +116,7 @@ function browseReducer(state: BrowseState, action: BrowseAction): BrowseState {
     }
 
     case 'NAVIGATE_START':
-      return { ...state, loading: true, error: null, loadingUrl: action.url }
+      return { ...state, loading: true, error: null, loadingUrl: action.url, authFailed: false }
 
     case 'NAVIGATE_SUCCESS': {
       if (!action.pushHistory) {
@@ -214,10 +217,10 @@ function browseReducer(state: BrowseState, action: BrowseAction): BrowseState {
     }
 
     case 'AUTH_REQUIRED':
-      return { ...state, loading: false, loadingUrl: null, authRequired: { url: action.url, domain: action.domain } }
+      return { ...state, loading: false, loadingUrl: null, authRequired: { url: action.url, domain: action.domain }, authFailed: !!action.failed }
 
     case 'AUTH_DISMISS':
-      return { ...state, authRequired: null }
+      return { ...state, authRequired: null, authFailed: false }
 
     case 'SET_CREDENTIALS': {
       const credentials = { ...state.credentials, [action.domain]: { username: action.username, password: action.password } }
@@ -256,6 +259,7 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
     credentials: {},
     cookieJar: {} as Record<string, string>,
     authRequired: null,
+    authFailed: false,
   })
   const [hydrated, setHydrated] = useState(false)
 
@@ -378,7 +382,8 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
       })
       .catch(err => {
         if (err.status === 401 || err.status === 403) {
-          dispatch({ type: 'AUTH_REQUIRED', url, domain })
+          // Credentials were just submitted and still rejected → flag failure.
+          dispatch({ type: 'AUTH_REQUIRED', url, domain, failed: true })
           return
         }
         dispatch({ type: 'NAVIGATE_ERROR', error: err.message || 'Failed to load page' })
@@ -397,6 +402,7 @@ export function BrowseProvider({ children }: { children: ReactNode }) {
     canGoBack: state.historyIndex > 0 || (state.historyIndex === 0 && state.historyStack.length > 0),
     canGoForward: state.historyIndex < state.historyStack.length - 1,
     authRequired: state.authRequired,
+    authFailed: state.authFailed,
     credentials: state.credentials,
     navigateToUrl,
     goBack: () => dispatch({ type: 'GO_BACK' }),

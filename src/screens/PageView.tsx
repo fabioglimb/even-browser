@@ -7,7 +7,7 @@ import { LinkList } from '../components/shared/LinkList'
 import { AuthDialog } from '../components/shared/AuthDialog'
 import { SearchBar } from '../components/shared/SearchBar'
 import { PageActions } from '../components/shared/PageActions'
-import { Button, Badge, Card, Divider, EmptyState, Loading, SectionHeader, useDrawerHeader } from 'even-toolkit/web'
+import { Button, Badge, Card, Divider, EmptyState, Loading, SectionHeader, Toast, useDrawerHeader } from 'even-toolkit/web'
 import { IcSearch, IcMore } from 'even-toolkit/web/icons/svg-icons'
 import { checkDirectModeAvailability, type DirectModeReason } from '../lib/direct-mode'
 import { displayUrl } from '../lib/url-utils'
@@ -41,11 +41,13 @@ export function PageView() {
     isBookmarked,
     setSettings,
     authRequired,
+    authFailed,
     submitAuth,
     dismissAuth,
   } = useBrowse()
 
   const [showSearch, setShowSearch] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
   const [showActions, setShowActions] = useState(false)
   const [directModeState, setDirectModeState] = useState<DirectModeState>('idle')
   const [directModeFrameReady, setDirectModeFrameReady] = useState(false)
@@ -128,6 +130,18 @@ export function PageView() {
     nextMatch,
     prevMatch,
   } = useContentSearch(currentPage?.lines ?? [])
+
+  // Auto-dismiss transient toast (~3s)
+  useEffect(() => {
+    if (!toast) return
+    const id = setTimeout(() => setToast(null), 3000)
+    return () => clearTimeout(id)
+  }, [toast])
+
+  // Surface a transient toast on fetch error (in addition to the error screen/banner)
+  useEffect(() => {
+    if (error) setToast(t('page.loadError'))
+  }, [error, t])
 
   // Scroll to match when it changes
   useEffect(() => {
@@ -252,6 +266,12 @@ export function PageView() {
     )
   }
 
+  const toastNode = toast ? (
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-[420px] px-3">
+      <Toast message={toast} variant="error" />
+    </div>
+  ) : null
+
   // Error state
   if (error && !currentPage) {
     return (
@@ -261,6 +281,7 @@ export function PageView() {
           <Button onClick={retry} size="sm">{t('page.retry')}</Button>
           <Button variant="default" size="sm" onClick={handleBack}>{t('page.goBack')}</Button>
         </div>
+        {toastNode}
       </div>
     )
   }
@@ -280,6 +301,7 @@ export function PageView() {
         <AuthDialog
           open={!!authRequired}
           domain={authRequired.domain}
+          error={authFailed ? t('auth.invalid') : undefined}
           onSubmit={submitAuth}
           onCancel={dismissAuth}
         />
@@ -436,6 +458,7 @@ export function PageView() {
           )}
         </div>
       )}
+      {toastNode}
     </div>
   )
 }
